@@ -44,7 +44,7 @@ double d(vector<vector<double> > & trains_a,vector<vector<double> > & trains_b, 
 
 //trains[n][p][i]
 
-void d(vector<vector<double> > & d_matrix,vector<vector<vector<double> > > & trains, double tau,double c)
+void d(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,double c)
 {
   int big_n=trains.size();
   int big_p=trains.front().size();
@@ -83,7 +83,7 @@ void d(vector<vector<double> > & d_matrix,vector<vector<vector<double> > > & tra
 
 //trains[n][p][i]
 
-void d_exp(vector<vector<double> > & d_matrix,vector<vector<vector<double> > > & trains, double tau,double c)
+void d_exp(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,double c)
 {
 
   int big_n=trains.size();
@@ -130,7 +130,7 @@ void d_exp(vector<vector<double> > & d_matrix,vector<vector<vector<double> > > &
 
 //trains[n][p][i]
 
-void d_exp_markage(vector<vector<double> > & d_matrix,vector<vector<vector<double> > > & trains, double tau,double c)
+void d_exp_markage(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,double c)
 {
 
   int big_n=trains.size();

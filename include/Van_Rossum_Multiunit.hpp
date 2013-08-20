@@ -9,9 +9,9 @@ using namespace std;
 double d(vector<vector<double> > & trains_a,vector<vector<double> > & trains_b, double tau,double c);
 
 //trains[n][p][i]
-void d(vector<vector<double> > & d_matrix,vector<vector<vector<double> > > & trains, double tau,double c);
-void d_exp(vector<vector<double> > & d_matrix,vector<vector<vector<double> > > & trains, double tau,double c);
-void d_exp_markage(vector<vector<double> > & d_matrix,vector<vector<vector<double> > > & trains, double tau,double c);
+void d(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,double c);
+void d_exp(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,double c);
+void d_exp_markage(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,double c);
 
 double big_r(vector<double> & u,double tau);
 double big_r_with_exp(vector<double> & u,vector<double> & exp_p,vector<double> & exp_m,double tau);
