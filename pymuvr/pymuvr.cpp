@@ -7,7 +7,6 @@
 using namespace std;
 
 // prototypes
-double **pymatrix_to_Cpparrayptrs(PyArrayObject *arrayin);
 static PyObject * distance_matrix(PyObject *self, PyObject *args, PyObject *kwds);
 
 // method table
@@ -57,7 +56,12 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args, PyObject *kwds
   // will be stored 
   npy_intp dims[2] = {big_n, big_n};
   py_d_matrix = (PyArrayObject *)PyArray_SimpleNew(big_n, dims, NPY_DOUBLE);
-  c_d_matrix = pymatrix_to_Cpparrayptrs(py_d_matrix);
+  int intn = (int)PyArray_DIM(py_d_matrix, 0);
+  int intm = (int)PyArray_DIM(py_d_matrix, 1);
+  double *a = (double *)PyArray_DATA(py_d_matrix); /* pointer to data as double */
+  for (unsigned int i=0; i<intn; i++){
+    c_d_matrix[i]=a+i*intm;
+  }
   
   // perform the core distance calculations
   d(c_d_matrix, trains, tau, cos);
@@ -67,24 +71,5 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args, PyObject *kwds
   delete [] c_d_matrix;
   return PyArray_Return(py_d_matrix);
 }
-
-
-// helper functions
-
-double **pymatrix_to_Cpparrayptrs(PyArrayObject *arrayin){
-	double **c, *a;
-	int n,m;
-	
-	n = arrayin->dimensions[0];
-	m = arrayin->dimensions[1];
-	c = new double*[n];
-	a=(double *) arrayin->data;  /* pointer to arrayin data as double */
-	for (unsigned int i=0; i<n; i++){
-	  c[i]=a+i*m;
-	}
-	return c;
-}
-
-
 
 

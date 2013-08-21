@@ -1,6 +1,6 @@
 from distutils.core import setup, Extension
 
-module1 = Extension('pymuvr.pymuvr',
+module1 = Extension('pymuvr',
                     sources = ['pymuvr/Van_Rossum_Multiunit.cpp', 'pymuvr/pymuvr.cpp'],
                     include_dirs = ['include'])
 
