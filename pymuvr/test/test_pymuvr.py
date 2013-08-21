@@ -15,7 +15,7 @@ def simple_train(mean_isi, max_duration):
 class TestDistanceMatrix(unittest.TestCase):
     def setUp(self):
         n_observations = 100
-        n_cells = 10
+        n_cells = 100
         mean_isi = 3
         max_duration = 25
         self.tau = 3

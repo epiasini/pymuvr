@@ -71,7 +71,7 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
   }
   
   // perform the core distance calculations
-  d(c_d_matrix, trains, tau, cos);
+  d_exp_markage(c_d_matrix, trains, tau, cos);
 
   // deallocate the memory used by the data structure needed for
   // direct access to the numpy array
