@@ -25,7 +25,7 @@ initpymuvr(void) {
 
 // main module function
 static PyObject * distance_matrix(PyObject *self, PyObject *args){
-  double tau, cos;
+  double cos, tau;
   PyObject *observations;
   Py_ssize_t big_n, big_p;
   PyArrayObject *py_d_matrix;
@@ -35,7 +35,7 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
 
   // parse arguments
   if (!PyArg_ParseTuple(args, "Odd",
-			&observations, &tau, &cos))
+			&observations, &cos, &tau))
     return NULL;
   
   // build the 3D array (observation, cell, spiketime) to be fed to
