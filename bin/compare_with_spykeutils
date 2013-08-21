@@ -11,9 +11,7 @@ import spykeutils.spike_train_metrics as stm
 def spiketrain_to_list(spiketrain):
     return [np.double(t) for t in spiketrain]
     
-
-def compare_results(n_observations, n_cells, rate, tstop, cos, tau):
-    # generate spike trains
+def generate_spike_trains(n_observations, n_cells, rate, tstop):
     sutils_units = {}
     pymuvr_observations = []
     for unit in range(n_cells):
@@ -24,23 +22,33 @@ def compare_results(n_observations, n_cells, rate, tstop, cos, tau):
         pymuvr_observations.append([])
         for unit in range(n_cells):
             pymuvr_observations[ob].append(spiketrain_to_list(sutils_units[unit][ob]))
-    
-    sutils_d = stm.van_rossum_multiunit_dist(sutils_units, weighting=cos, tau=tau)
-    pymuvr_d = pymuvr.distance_matrix(pymuvr_observations, cos, tau)
-    return pymuvr_d - sutils_d
+
+    return sutils_units, pymuvr_observations
 
 def main():
     n_observations = 10
-    n_cells = 10
+    n_cells = 30
     rate = 100
     tstop = 10
-    cos = 0.5
+    cos = 0.1
     tau = 1
-    diff = compare_results(n_observations, n_cells, rate, tstop, cos, tau)
-    print np.abs(diff).max()
 
+    sutils_units, pymuvr_observations = generate_spike_trains(n_observations, n_cells, rate, tstop)
+    sutils_d = stm.van_rossum_multiunit_dist(sutils_units, weighting=cos, tau=tau)
+    pymuvr_d = pymuvr.distance_matrix(pymuvr_observations, cos, tau)
+
+    difference = sutils_d - pymuvr_d
+    midpoint = (sutils_d + pymuvr_d)/2
     
-    
+    print(sutils_d)
+    print(pymuvr_d)
+    print("Norm of difference over norm of midpoint: {0}".format(np.linalg.norm(difference)/np.linalg.norm(midpoint)))
+    print("Max difference over max of midpoint: {0}".format(np.abs(difference).max()/np.abs(midpoint).max()))
+
 
 if __name__ == "__main__":
     main()
+
+# to profile:
+# python -m cProfile -o output.pstats compare_with_spykeutils
+# gprof2dot.py -f pstats output.pstats | dot -Tpng -o output.png
