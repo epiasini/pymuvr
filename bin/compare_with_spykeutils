@@ -1,0 +1,46 @@
+#! /usr/bin/env python
+# -*- mode: Python; coding: utf-8 -*-
+import numpy as np
+
+import pymuvr
+
+import quantities as pq
+import spykeutils.spike_train_generation as stg
+import spykeutils.spike_train_metrics as stm
+
+def spiketrain_to_list(spiketrain):
+    return [np.double(t) for t in spiketrain]
+    
+
+def compare_results(n_observations, n_cells, rate, tstop, cos, tau):
+    # generate spike trains
+    sutils_units = {}
+    pymuvr_observations = []
+    for unit in range(n_cells):
+        sutils_units[unit] = []
+        for ob in range(n_observations):
+            sutils_units[unit].append(stg.gen_homogeneous_poisson(rate * pq.Hz, t_stop=tstop * pq.s))
+    for ob in range(n_observations):
+        pymuvr_observations.append([])
+        for unit in range(n_cells):
+            pymuvr_observations[ob].append(spiketrain_to_list(sutils_units[unit][ob]))
+    
+    sutils_d = stm.van_rossum_multiunit_dist(sutils_units, weighting=cos, tau=tau)
+    pymuvr_d = pymuvr.distance_matrix(pymuvr_observations, cos, tau)
+    return pymuvr_d - sutils_d
+
+def main():
+    n_observations = 10
+    n_cells = 10
+    rate = 100
+    tstop = 10
+    cos = 0.5
+    tau = 1
+    diff = compare_results(n_observations, n_cells, rate, tstop, cos, tau)
+    print np.abs(diff).max()
+
+    
+    
+
+if __name__ == "__main__":
+    main()
