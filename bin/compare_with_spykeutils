@@ -18,6 +18,10 @@ def generate_spike_trains(n_observations, n_cells, rate, tstop):
         sutils_units[unit] = []
         for ob in range(n_observations):
             sutils_units[unit].append(stg.gen_homogeneous_poisson(rate * pq.Hz, t_stop=tstop * pq.s))
+    # observation 1 is identical to observation 0 for all the cells.
+    for unit in range(n_cells):
+        sutils_units[unit][1] = sutils_units[unit][0]
+
     for ob in range(n_observations):
         pymuvr_observations.append([])
         for unit in range(n_cells):
@@ -27,15 +31,15 @@ def generate_spike_trains(n_observations, n_cells, rate, tstop):
 
 def main():
     n_observations = 10
-    n_cells = 30
-    rate = 100
-    tstop = 8
+    n_cells = 10
+    rate = 30
+    tstop = 3
     cos = 0.1
-    tau = 1
+    tau = 0.012
 
     sutils_units, pymuvr_observations = generate_spike_trains(n_observations, n_cells, rate, tstop)
     sutils_d = stm.van_rossum_multiunit_dist(sutils_units, weighting=cos, tau=tau)
-    pymuvr_d = pymuvr.distance_matrix(pymuvr_observations, cos, tau)
+    pymuvr_d = pymuvr.square_distance_matrix(pymuvr_observations, cos, tau)
 
     difference = sutils_d - pymuvr_d
     midpoint = (sutils_d + pymuvr_d)/2

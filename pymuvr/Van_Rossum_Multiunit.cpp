@@ -181,9 +181,9 @@ void d_exp_markage(double **d_matrix,vector<vector<vector<double> > > & trains, 
 	      d-=2*c*big_r_with_exp_markage(trains[m][p],fs[m][p],exp_ps[m][p],exp_ns[m][p],trains[n][q],fs[n][q],exp_ps[n][q],exp_ns[n][q]);
 	    }
 
-	d_matrix[n][m]=sqrt(d);
-	d_matrix[m][n]=sqrt(d);
-
+	if (d>0){
+	  d_matrix[n][m] = d_matrix[m][n] = sqrt(d);
+	} // else, leave it at 0.
       }
 }
 
@@ -225,17 +225,18 @@ void d_exp_markage_rect(double **d_matrix,
     for(unsigned int p=0;p<big_p ;++p)
       markage(fs2[n][p], exp_ps2[n][p], exp_ns2[n][p], trains2[n][p],tau);
 
-  for(unsigned int n=0;n<big_n-1 ;++n)
-    for(unsigned int m=0;m<big_m-1 ;++m)
+  for(unsigned int n=0;n<big_n ;++n)
+    for(unsigned int m=0;m<big_m ;++m)
       {
-	d_matrix[n][m]=0; 
+	d_matrix[n][m]=0;
+	double d = 0;
 	
 	//R_p
 	for(unsigned int p=0;p<big_p ;++p)
 	  {
-	    d_matrix[n][m]+=big_r_with_exp_markage(fs1[n][p]);
-	    d_matrix[n][m]+=big_r_with_exp_markage(fs2[m][p]);
-	    d_matrix[n][m]-=2*big_r_with_exp_markage(trains1[n][p],fs1[n][p],exp_ps1[n][p],exp_ns1[n][p],trains2[m][p],fs2[m][p],exp_ps2[m][p],exp_ns2[m][p]);
+	    d+=big_r_with_exp_markage(fs1[n][p]);
+	    d+=big_r_with_exp_markage(fs2[m][p]);
+	    d-=2*big_r_with_exp_markage(trains1[n][p],fs1[n][p],exp_ps1[n][p],exp_ns1[n][p],trains2[m][p],fs2[m][p],exp_ps2[m][p],exp_ns2[m][p]);
 	  }
 	
 	double r_pq=0;
@@ -249,8 +250,11 @@ void d_exp_markage_rect(double **d_matrix,
 	      r_pq-=big_r_with_exp_markage(trains2[m][p],fs2[m][p],exp_ps2[m][p],exp_ns2[m][p],trains1[n][q],fs1[n][q],exp_ps1[n][q],exp_ns1[n][q]);
 	    }
 	
-	d_matrix[n][m]+=2*c*r_pq;
-	d_matrix[n][m]=sqrt(d_matrix[n][m]);
+	d+=2*c*r_pq;
+
+	if (d>0){
+	  d_matrix[n][m] = sqrt(d);
+	} // else, leave it at 0.
       }
 }
 
