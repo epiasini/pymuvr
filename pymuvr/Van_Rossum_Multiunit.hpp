@@ -12,6 +12,7 @@ double d(vector<vector<double> > & trains_a,vector<vector<double> > & trains_b, 
 void d(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,double c);
 void d_exp(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,double c);
 void d_exp_markage(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,double c);
+void d_exp_markage_rect(double **d_matrix,vector<vector<vector<double> > > & trains1,vector<vector<vector<double> > > & trains2, double tau,double c);
 
 double big_r(vector<double> & u,double tau);
 double big_r_with_exp(vector<double> & u,vector<double> & exp_p,vector<double> & exp_m,double tau);

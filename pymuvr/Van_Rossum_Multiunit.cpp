@@ -180,6 +180,73 @@ void d_exp_markage(double **d_matrix,vector<vector<vector<double> > > & trains, 
       }
 }
 
+void d_exp_markage_rect(double **d_matrix,
+			vector<vector<vector<double> > > & trains1,
+			vector<vector<vector<double> > > & trains2,
+			double tau,
+			double c)
+{
+
+  int big_n=trains1.size();
+  int big_m=trains2.size();
+  int big_p=trains1.front().size();
+
+  if (trains2.front().size() != big_p){
+    cout << "d_exp_markage_rect: the observations in both lists must have the same number of cells." << endl;
+  }
+
+
+  vector<vector<vector<double> > > exp_ps1(big_n,vector<vector<double> >(big_p));
+  vector<vector<vector<double> > > exp_ns1(big_n,vector<vector<double> >(big_p));
+  vector<vector<vector<double> > > exp_ps2(big_m,vector<vector<double> >(big_p));
+  vector<vector<vector<double> > > exp_ns2(big_m,vector<vector<double> >(big_p));
+
+  for(unsigned int n=0;n<big_n ;++n)
+    for(unsigned int p=0;p<big_p ;++p)
+      expage(exp_ps1[n][p], exp_ns1[n][p],trains1[n][p],tau);  
+  for(unsigned int n=0;n<big_m ;++n)
+    for(unsigned int p=0;p<big_p ;++p)
+      expage(exp_ps2[n][p], exp_ns2[n][p],trains2[n][p],tau);  
+
+  vector<vector<vector<double> > > fs1(big_n,vector<vector<double> >(big_p));
+  vector<vector<vector<double> > > fs2(big_m,vector<vector<double> >(big_p));
+  
+  for(unsigned int n=0;n<big_n ;++n)
+    for(unsigned int p=0;p<big_p ;++p)
+      markage(fs1[n][p], exp_ps1[n][p], exp_ns1[n][p], trains1[n][p],tau);
+  for(unsigned int n=0;n<big_m ;++n)
+    for(unsigned int p=0;p<big_p ;++p)
+      markage(fs2[n][p], exp_ps2[n][p], exp_ns2[n][p], trains2[n][p],tau);
+
+  for(unsigned int n=0;n<big_n-1 ;++n)
+    for(unsigned int m=0;m<big_m-1 ;++m)
+      {
+	d_matrix[n][m]=0; 
+	
+	//R_p
+	for(unsigned int p=0;p<big_p ;++p)
+	  {
+	    d_matrix[n][m]+=big_r_with_exp_markage(fs1[n][p]);
+	    d_matrix[n][m]+=big_r_with_exp_markage(fs2[m][p]);
+	    d_matrix[n][m]-=2*big_r_with_exp_markage(trains1[n][p],fs1[n][p],exp_ps1[n][p],exp_ns1[n][p],trains2[m][p],fs2[m][p],exp_ps2[m][p],exp_ns2[m][p]);
+	  }
+	
+	double r_pq=0;
+	
+	for(unsigned int p=0;p<big_p-1 ;++p)
+	  for(unsigned int q=p+1;q<big_p ;++q)
+	    {
+	      r_pq+=big_r_with_exp_markage(trains1[n][p],fs1[n][p],exp_ps1[n][p],exp_ns1[n][p],trains1[n][q],fs1[n][q],exp_ps1[n][q],exp_ns1[n][q]);
+	      r_pq+=big_r_with_exp_markage(trains2[m][p],fs2[m][p],exp_ps2[m][p],exp_ns2[m][p],trains2[m][q],fs2[m][q],exp_ps2[m][q],exp_ns2[m][q]);
+	      r_pq-=big_r_with_exp_markage(trains1[n][p],fs1[n][p],exp_ps1[n][p],exp_ns1[n][p],trains2[m][q],fs2[m][q],exp_ps2[m][q],exp_ns2[m][q]);
+	      r_pq-=big_r_with_exp_markage(trains2[m][p],fs2[m][p],exp_ps2[m][p],exp_ns2[m][p],trains1[n][q],fs1[n][q],exp_ps1[n][q],exp_ns1[n][q]);
+	    }
+	
+	d_matrix[n][m]+=2*c*r_pq;
+	d_matrix[n][m]=sqrt(d_matrix[n][m]);
+      }
+}
+
 
 double big_r(vector<double> & u,double tau)
 {
