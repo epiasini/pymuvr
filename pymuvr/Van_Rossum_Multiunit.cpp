@@ -13,7 +13,7 @@ using namespace std;
 double d(vector<vector<double> > & trains_a,vector<vector<double> > & trains_b, double tau,double c)
 {
 
-  double big_p=trains_a.size();
+  unsigned int big_p=trains_a.size();
 
   double d=0; 
 
@@ -46,8 +46,8 @@ double d(vector<vector<double> > & trains_a,vector<vector<double> > & trains_b, 
 
 void d(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,double c)
 {
-  int big_n=trains.size();
-  int big_p=trains.front().size();
+  unsigned int big_n=trains.size();
+  unsigned int big_p=trains.front().size();
 
   vector<double> squares(big_n,0.0);
 
@@ -86,8 +86,8 @@ void d(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,d
 void d_exp(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,double c)
 {
 
-  int big_n=trains.size();
-  int big_p=trains.front().size();
+  unsigned int big_n=trains.size();
+  unsigned int big_p=trains.front().size();
 
   vector<vector<vector<double> > > exp_ps(big_n,vector<vector<double> >(big_p));
   vector<vector<vector<double> > > exp_ns(big_n,vector<vector<double> >(big_p));
@@ -133,8 +133,8 @@ void d_exp(double **d_matrix,vector<vector<vector<double> > > & trains, double t
 void d_exp_markage(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,double c)
 {
 
-  int big_n=trains.size();
-  int big_p=trains.front().size();
+  unsigned int big_n=trains.size();
+  unsigned int big_p=trains.front().size();
 
   // make sure d_matrix is initialised to zero
   for(unsigned int n=0;n<big_n;n++){
@@ -194,9 +194,9 @@ void d_exp_markage_rect(double **d_matrix,
 			double c)
 {
 
-  int big_n=trains1.size();
-  int big_m=trains2.size();
-  int big_p=trains1.front().size();
+  unsigned int big_n=trains1.size();
+  unsigned int big_m=trains2.size();
+  unsigned int big_p=trains1.front().size();
 
   if (trains2.front().size() != big_p){
     cout << "d_exp_markage_rect: the observations in both lists must have the same number of cells." << endl;
@@ -261,7 +261,7 @@ void d_exp_markage_rect(double **d_matrix,
 
 double big_r(vector<double> & u,double tau)
 {
-  double u_size=u.size();
+  unsigned int u_size=u.size();
 
   if(u_size==0)
     return 0;
@@ -279,7 +279,7 @@ double big_r(vector<double> & u,double tau)
 
 double big_r_with_exp(vector<double> & u,vector<double> & exp_p,vector<double> & exp_m,double tau)
 {
-  double u_size=u.size();
+  unsigned int u_size=u.size();
 
   if(u_size==0)
     return 0;
@@ -297,7 +297,7 @@ double big_r_with_exp(vector<double> & u,vector<double> & exp_p,vector<double> &
 
 double big_r_with_exp_markage(vector<double> & fs)
 {
-  int f_size=fs.size();
+  unsigned int f_size=fs.size();
 
   if(f_size==0)
     return 0;
@@ -314,8 +314,8 @@ double big_r_with_exp_markage(vector<double> & fs)
 
 double big_r(vector<double> & u_a,vector<double> & u_b,double tau)
 {
-  int u_a_size=u_a.size();
-  int u_b_size=u_b.size();
+  unsigned int u_a_size=u_a.size();
+  unsigned int u_b_size=u_b.size();
 
 
   if(u_a_size==0||u_b_size==0)
@@ -334,8 +334,8 @@ double big_r(vector<double> & u_a,vector<double> & u_b,double tau)
 
 double big_r_with_exp(vector<double> & u_a,vector<double> & exp_p_a,vector<double> & exp_m_a,vector<double> & u_b,vector<double> & exp_p_b,vector<double> & exp_m_b,double tau)
 {
-  int u_a_size=u_a.size();
-  int u_b_size=u_b.size();
+  unsigned int u_a_size=u_a.size();
+  unsigned int u_b_size=u_b.size();
 
   if(u_a_size==0||u_b_size==0)
     return 0;
@@ -356,8 +356,8 @@ double big_r_with_exp(vector<double> & u_a,vector<double> & exp_p_a,vector<doubl
 double big_r_with_exp_markage(vector<double> & train_a, vector<double> & f_a,vector<double> & e_pos_a,vector<double> & e_neg_a,vector<double> & train_b, vector<double> & f_b,vector<double> & e_pos_b,vector<double> & e_neg_b)
 {
   
-  int train_a_size=train_a.size();
-  int train_b_size=train_b.size();
+  unsigned int train_a_size=train_a.size();
+  unsigned int train_b_size=train_b.size();
 
   if(train_a_size==0||train_b_size==0)
     return 0;
@@ -396,7 +396,7 @@ double big_r_with_exp_markage(vector<double> & train_a, vector<double> & f_a,vec
 void expage(vector<double> & e_pos, vector<double> & e_neg,vector<double> & train,double tau)
 {
 
-  int train_size=train.size();
+  unsigned int train_size=train.size();
 
   e_pos.resize(train_size);
   e_neg.resize(train_size);
@@ -413,7 +413,7 @@ void expage(vector<double> & e_pos, vector<double> & e_neg,vector<double> & trai
 void markage(vector<double> & f, vector<double> & e_pos, vector<double> & e_neg, vector<double> & train,double tau)
 {
 
-  int train_size=train.size();
+  unsigned int train_size=train.size();
   
   f.resize(train_size);
   
