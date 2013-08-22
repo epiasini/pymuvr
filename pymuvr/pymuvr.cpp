@@ -16,8 +16,8 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args);
 
 /*==== method table ====*/
 static PyMethodDef pymuvrMethods[] = {
-  {"distance_matrix", distance_matrix, METH_VARARGS, "Return the all-to-all dissimilarity matrix for the given list of observations."},
-  {"square_distance_matrix", square_distance_matrix, METH_VARARGS, "Return the 'bipartite' rectangular dissimilarity matrix between the observations in the first and the second list."},
+  {"distance_matrix", distance_matrix, METH_VARARGS, "Return the 'bipartite' rectangular dissimilarity matrix between the observations in the first and the second list."},
+  {"square_distance_matrix", square_distance_matrix, METH_VARARGS, "Return the all-to-all dissimilarity matrix for the given list of observations."},
   {NULL, NULL, 0, NULL}  // Sentinel - marks the end of the structure
 };
 
@@ -94,7 +94,7 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
 
   // free the memory used by the data structure needed for direct
   // access to the numpy array
-  PyArray_Free(py_d_matrix, &c_d_matrix);
+  PyArray_Free(py_d_matrix, c_d_matrix);
 
   return PyArray_Return((PyArrayObject *)py_d_matrix);
 
@@ -102,7 +102,7 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
   // if something goes wrong, remember to free the memory used for
   // c_d_matrix and to decrease the reference count for py_d_matrix
   // before returning.
-  PyArray_Free(py_d_matrix, &c_d_matrix);
+  PyArray_Free(py_d_matrix, c_d_matrix);
   Py_DECREF(py_d_matrix);
   return NULL;
 }
@@ -156,16 +156,14 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
 
   // free the memory used by the data structure needed for direct
   // access to the numpy array
-  cout << "pymuvr: going to free some memory." << endl;
-  PyArray_Free(py_d_matrix, &c_d_matrix);
-  cout << "pymuvr: going to free some memory." << endl;
+  PyArray_Free(py_d_matrix, c_d_matrix);
   return PyArray_Return((PyArrayObject *)py_d_matrix);
 
  fail:
   // if something goes wrong, remember to free the memory used for
   // c_d_matrix and to decrease the reference count for py_d_matrix
   // before returning.
-  PyArray_Free(py_d_matrix, (void *)&c_d_matrix);
+  PyArray_Free(py_d_matrix, c_d_matrix);
   Py_DECREF(py_d_matrix);
   return NULL;
 }

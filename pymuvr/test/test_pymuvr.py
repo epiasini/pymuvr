@@ -14,7 +14,7 @@ def simple_train(mean_isi, max_duration):
 
 class TestDistanceMatrix(unittest.TestCase):
     def setUp(self):
-        n_observations = 50
+        n_observations = 10
         n_cells = 100
         mean_isi = 0.1
         max_duration = 3
@@ -27,9 +27,17 @@ class TestDistanceMatrix(unittest.TestCase):
         assert d.shape == (len(self.observations), len(self.observations))
         print("")
         print(d)
+    def test_distance_matrix(self):
+        d = pymuvr.distance_matrix(self.observations[:3],
+                                   self.observations[3:],
+                                   self.cos,
+                                   self.tau)
+        assert d.shape == (3, len(self.observations)-3)
+        print("")
+        print(d)
         
 
 if __name__ == "__main__":
-    #suite = unittest.TestLoader().loadTestsFromTestCase(TestDistanceMatrix)
-    #unittest.TextTestRunner(verbosity=2).run(suite)
-    unittest.main()
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestDistanceMatrix)
+    unittest.TextTestRunner(verbosity=2).run(suite)
+    #unittest.main()
