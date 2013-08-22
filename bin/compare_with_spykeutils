@@ -29,7 +29,7 @@ def main():
     n_observations = 10
     n_cells = 30
     rate = 100
-    tstop = 10
+    tstop = 8
     cos = 0.1
     tau = 1
 

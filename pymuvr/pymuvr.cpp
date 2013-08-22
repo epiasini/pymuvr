@@ -1,3 +1,5 @@
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+
 #include "Python.h"
 #include <vector>
 
@@ -6,31 +8,34 @@
 
 using namespace std;
 
-// prototypes
+/*==== prototypes ====*/
 static PyObject * distance_matrix(PyObject *self, PyObject *args);
 
-// method table
+//static PyObject * rectangular_distance_matrix(PyObject *self, PyObject *args);
+
+/*==== method table ====*/
 static PyMethodDef pymuvrMethods[] = {
-  {"distance_matrix", distance_matrix, METH_VARARGS, "Distance (dissimilarity) matrix with the Multi-Unit Van Rossum metric."},
-  {NULL, NULL, 0, NULL}  /* Sentinel */
+  {"distance_matrix", distance_matrix, METH_VARARGS, "Return the all-to-all dissimilarity matrix for the given list of observations."},
+  //  {"rectangular_distance_matrix", square_distance_matrix, METH_VARARGS, "Return the 'bipartite' rectangular dissimilarity matrix between the observations in the first and the second list."},
+  {NULL, NULL, 0, NULL}  // Sentinel - marks the end of the structure
 };
 
-// module initialisation
+/*==== module initialisation ====*/
 PyMODINIT_FUNC
 initpymuvr(void) {
   (void) Py_InitModule("pymuvr", pymuvrMethods);
-  import_array()
+  import_array();
 }
 
 
-// main module function
+/*==== function implementations ====*/
+
 static PyObject * distance_matrix(PyObject *self, PyObject *args){
   double cos, tau;
-  PyObject *observations;
+  PyObject *observations, *py_d_matrix;
   Py_ssize_t big_n, big_p;
-  PyArrayObject *py_d_matrix;
-  double *py_data;
   npy_intp dims[2];
+  PyArray_Descr *descr;
   double **c_d_matrix;
 
   // parse arguments
@@ -62,23 +67,27 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
   // will be stored 
   dims[0] = big_n;
   dims[1] = big_n;
-  py_d_matrix = (PyArrayObject *)PyArray_SimpleNew(2, dims, NPY_DOUBLE);
-  py_data = (double *)PyArray_DATA(py_d_matrix); // pointer to data as double
-  c_d_matrix = new double* [big_n]; // array of pointers to the rows
-				    // of the numpy matrix
-  for (npy_intp i=0; i<big_n; i++){
-    c_d_matrix[i] = py_data + i*big_n;
-  }
-  
+  py_d_matrix = PyArray_SimpleNew(2, dims, NPY_DOUBLE);
+  descr = PyArray_DescrFromType(NPY_DOUBLE);
+  if (PyArray_AsCArray (&py_d_matrix, &c_d_matrix, dims, 2, descr) == -1)
+    goto fail;
+
   // perform the core distance calculations
   d_exp_markage(c_d_matrix, trains, tau, cos);
 
-  // deallocate the memory used by the data structure needed for
-  // direct access to the numpy array
-  delete [] c_d_matrix;
+  // free the memory used by the data structure needed for direct
+  // access to the numpy array
+  PyArray_Free(py_d_matrix, &c_d_matrix);
 
-  
-  return PyArray_Return(py_d_matrix);
+  return PyArray_Return((PyArrayObject *)py_d_matrix);
+
+ fail:
+  // if something goes wrong, remember to free the memory used for
+  // c_d_matrix and to decrease the reference count for py_d_matrix
+  // before returning.
+  PyArray_Free(py_d_matrix, &c_d_matrix);
+  Py_DECREF(py_d_matrix);
+  return NULL;
 }
 
 
