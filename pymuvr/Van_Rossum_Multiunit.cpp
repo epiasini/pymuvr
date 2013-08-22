@@ -136,6 +136,13 @@ void d_exp_markage(double **d_matrix,vector<vector<vector<double> > > & trains, 
   int big_n=trains.size();
   int big_p=trains.front().size();
 
+  // make sure d_matrix is initialised to zero
+  for(unsigned int n=0;n<big_n;n++){
+    for(unsigned int m=0;m<big_n;m++){
+      d_matrix[n][m] = 0;
+    }
+  }
+
   vector<vector<vector<double> > > exp_ps(big_n,vector<vector<double> >(big_p));
   vector<vector<vector<double> > > exp_ns(big_n,vector<vector<double> >(big_p));
 
