@@ -6,9 +6,6 @@ import pymuvr
 try:
     import numpy as np
     NUMPY_IS_AVAILABLE = True
-
-    def spiketrain_to_list(spiketrain):
-        return [np.double(t) for t in spiketrain]
 except ImportError:
     NUMPY_IS_AVAILABLE = False
 
@@ -85,7 +82,7 @@ class TestCompareWithSpykeutils(unittest.TestCase):
         for ob in range(self.n_observations):
             self.pymuvr_observations.append([])
             for unit in range(self.n_cells):
-                self.pymuvr_observations[ob].append(spiketrain_to_list(self.sutils_units[unit][ob]))
+                self.pymuvr_observations[ob].append(self.sutils_units[unit][ob].tolist())
         
     def test_compare_with_spykeutils(self):
         sutils_d = stm.van_rossum_multiunit_dist(self.sutils_units,
