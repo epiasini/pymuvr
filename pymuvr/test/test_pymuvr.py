@@ -56,11 +56,11 @@ class TestDistanceMatrix(unittest.TestCase):
                                                self.observations,
                                                self.cos,
                                                self.tau)
-        d_square = pymuvr.square_distance_matrix(self.observations, self.cos, self.tau)
+        d_square = pymuvr.square_distance_matrix(self.observations,
+                                                 self.cos,
+                                                 self.tau)
 
-        difference = d_square - d_rectangular
-        midpoint = (d_square + d_rectangular)/2
-        self.assertTrue(np.linalg.norm(difference)/np.linalg.norm(midpoint) < 1e-12 and np.abs(difference).max()/np.abs(midpoint).max() < 1e-12)
+        np.testing.assert_array_almost_equal(d_rectangular, d_square)
 
 @unittest.skipIf(not SPYKEUTILS_IS_AVAILABLE or not NUMPY_IS_AVAILABLE,
                  "can't import spykeutils or numpy, or both")
@@ -88,12 +88,13 @@ class TestCompareWithSpykeutils(unittest.TestCase):
                 self.pymuvr_observations[ob].append(spiketrain_to_list(self.sutils_units[unit][ob]))
         
     def test_compare_with_spykeutils(self):
-        sutils_d = stm.van_rossum_multiunit_dist(self.sutils_units, weighting=self.cos, tau=self.tau)
-        pymuvr_d = pymuvr.square_distance_matrix(self.pymuvr_observations, self.cos, self.tau)
-
-        difference = sutils_d - pymuvr_d
-        midpoint = (sutils_d + pymuvr_d)/2
-        self.assertTrue(np.linalg.norm(difference)/np.linalg.norm(midpoint) < 1e-12 and np.abs(difference).max()/np.abs(midpoint).max() < 1e-12)
+        sutils_d = stm.van_rossum_multiunit_dist(self.sutils_units,
+                                                 weighting=self.cos,
+                                                 tau=self.tau)
+        pymuvr_d = pymuvr.square_distance_matrix(self.pymuvr_observations,
+                                                 self.cos,
+                                                 self.tau)
+        np.testing.assert_array_almost_equal(sutils_d, pymuvr_d)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
