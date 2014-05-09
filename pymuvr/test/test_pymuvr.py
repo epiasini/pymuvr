@@ -38,15 +38,18 @@ class TestDistanceMatrix(unittest.TestCase):
         self.observations = [[simple_train(mean_isi, max_duration) for c in range(n_cells)] for o in range(n_observations)]
         # observation 1 is identical to observation 0 for all the cells.
         self.observations[0] = self.observations[1][:]
+
     def test_square_distance_matrix(self):
         d = pymuvr.square_distance_matrix(self.observations, self.cos, self.tau)
         self.assertEqual(d.shape, (len(self.observations), len(self.observations)))
+
     def test_distance_matrix(self):
         d = pymuvr.distance_matrix(self.observations[:3],
                                    self.observations[3:],
                                    self.cos,
                                    self.tau)
         self.assertEqual(d.shape, (3, len(self.observations)-3))
+
     @unittest.skipIf(not NUMPY_IS_AVAILABLE, "can't import numpy")
     def test_compare_square_and_rectangular(self):
         d_rectangular = pymuvr.distance_matrix(self.observations,
@@ -58,6 +61,15 @@ class TestDistanceMatrix(unittest.TestCase):
                                                  self.tau)
 
         np.testing.assert_array_almost_equal(d_rectangular, d_square)
+
+    @unittest.skipIf(not NUMPY_IS_AVAILABLE, "can't import numpy")
+    def test_empty_spike_train(self):
+        # Regression test: This segfaulted in the C++ code
+        observations = [o[:] for o in self.observations]
+        observations[0][0] = []
+        d_rectangular = pymuvr.distance_matrix(observations[:3],
+                                               observations[3:],
+                                               self.cos, self.tau)
 
 @unittest.skipIf(not SPYKEUTILS_IS_AVAILABLE or not NUMPY_IS_AVAILABLE,
                  "can't import spykeutils or numpy, or both")

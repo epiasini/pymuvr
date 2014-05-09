@@ -417,6 +417,9 @@ void markage(vector<double> & f, vector<double> & e_pos, vector<double> & e_neg,
   
   f.resize(train_size);
   
+  if (train_size == 0)
+    return;
+
   f[0]=0;
 
   for(unsigned int i=1;i<train_size ;++i)
