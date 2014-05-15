@@ -4,8 +4,11 @@ python:
 env:
   - without_spykeutils=''
   - without_spykeutils=true
-install:
-  - "pip install -r requirements.txt"
+virtualenv:
+  system_site_packages: true
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq python-scipy
 before_script:
   - "pip install spykeutils"
 script:
