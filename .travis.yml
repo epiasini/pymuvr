@@ -9,6 +9,8 @@ virtualenv:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq python-scipy
+install:
+  - "pip install ." 
 before_script:
   - "pip install spykeutils"
 script:
