@@ -1,0 +1,12 @@
+language: python
+python:
+  - "2.7"
+env:
+  - without_spykeutils=''
+  - without_spykeutils=true
+install:
+  - "pip install -r requirements.txt"
+before_script:
+  - "pip install spykeutils"
+script:
+  - "python pymuvr/test/test_pymuvr.py"
