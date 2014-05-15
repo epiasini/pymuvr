@@ -39,3 +39,6 @@ See `pymuvr/test/test_pymuvr.py` for detailed examples of usage.
 
 ## License
 This package is licensed under GPLv3. See COPYING for details.
+
+-------
+[![Build Status](https://travis-ci.org/epiasini/pymuvr.svg?branch=master)](https://travis-ci.org/epiasini/pymuvr)
