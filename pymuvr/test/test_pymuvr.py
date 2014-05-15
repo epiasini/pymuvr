@@ -1,22 +1,30 @@
 import unittest
 import random
+import os
 
 import pymuvr
 
+# check if numpy is installed
 try:
     import numpy as np
     NUMPY_IS_AVAILABLE = True
 except ImportError:
     NUMPY_IS_AVAILABLE = False
 
+# check if spykeutils is available. As a special case needed for
+# Travis, pretend it's not available in any case if the
+# without_spykeutils environment variable is set and is not an empty
+# string.
 try:
     import quantities as pq
     import spykeutils.spike_train_generation as stg
     import spykeutils.spike_train_metrics as stm
-    SPYKEUTILS_IS_AVAILABLE = True
+    SPYKEUTILS_IS_AVAILABLE = not bool(os.environ['without_spykeutils'])
 except ImportError:
     SPYKEUTILS_IS_AVAILABLE = False
-
+except KeyError:
+    SPYKEUTILS_IS_AVAILABLE = True
+    
 
 def simple_train(mean_isi, max_duration):
     train = []
