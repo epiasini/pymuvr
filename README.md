@@ -1,4 +1,7 @@
-# pymuvr [![Build Status](https://travis-ci.org/epiasini/pymuvr.svg?branch=master)](https://travis-ci.org/epiasini/pymuvr)
+# pymuvr
+## Overview
+[![Build Status](https://travis-ci.org/epiasini/pymuvr.svg?branch=master)](https://travis-ci.org/epiasini/pymuvr)
+
 Multi-unit Van Rossum spike train metric. This is a kernel-based
 implementation with markage vector and precomputed exponential factor,
 as described in Houghton and Kreuz, 2012, 'On the efficient
