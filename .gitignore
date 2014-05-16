@@ -35,3 +35,4 @@ nosetests.xml
 .pydevproject
 /bin/output.png
 /bin/output.pstats
+/MANIFEST

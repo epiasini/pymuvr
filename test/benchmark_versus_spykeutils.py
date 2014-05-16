@@ -1,6 +1,3 @@
-#! /usr/bin/env python
-# -*- mode: Python; coding: utf-8 -*-
-
 """
 This is a standalone benchmark script that can be used to compare
 execution times between pymuvr and spykeutils.
