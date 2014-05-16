@@ -14,4 +14,4 @@ install:
 before_script:
   - "pip install spykeutils"
 script:
-  - "python pymuvr/test/test_pymuvr.py"
+  - "python test/test_pymuvr.py"
