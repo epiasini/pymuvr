@@ -1,3 +1,4 @@
+include COPYING
 include README.md
 include requirements.txt
 include include/Van_Rossum_Multiunit.hpp
