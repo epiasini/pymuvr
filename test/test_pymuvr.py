@@ -1,15 +1,9 @@
 import unittest
 import random
 import os
+import numpy as np
 
 import pymuvr
-
-# check if numpy is installed
-try:
-    import numpy as np
-    NUMPY_IS_AVAILABLE = True
-except ImportError:
-    NUMPY_IS_AVAILABLE = False
 
 # check if spykeutils is available. As a special case needed for
 # Travis, pretend it's not available in any case if the
@@ -58,7 +52,6 @@ class TestDistanceMatrix(unittest.TestCase):
                                    self.tau)
         self.assertEqual(d.shape, (3, len(self.observations)-3))
 
-    @unittest.skipIf(not NUMPY_IS_AVAILABLE, "can't import numpy")
     def test_compare_square_and_rectangular(self):
         d_rectangular = pymuvr.distance_matrix(self.observations,
                                                self.observations,
@@ -70,7 +63,6 @@ class TestDistanceMatrix(unittest.TestCase):
 
         np.testing.assert_array_almost_equal(d_rectangular, d_square)
 
-    @unittest.skipIf(not NUMPY_IS_AVAILABLE, "can't import numpy")
     def test_empty_spike_train(self):
         # Regression test: This segfaulted in the C++ code
         observations = [o[:] for o in self.observations]
@@ -79,8 +71,8 @@ class TestDistanceMatrix(unittest.TestCase):
                                                observations[3:],
                                                self.cos, self.tau)
 
-@unittest.skipIf(not SPYKEUTILS_IS_AVAILABLE or not NUMPY_IS_AVAILABLE,
-                 "can't import spykeutils or numpy, or both")
+@unittest.skipIf(not SPYKEUTILS_IS_AVAILABLE,
+                 "can't import spykeutils")
 class TestCompareWithSpykeutils(unittest.TestCase):
     def setUp(self):
         self.n_observations = 10
