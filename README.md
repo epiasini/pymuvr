@@ -10,11 +10,18 @@ Python wrapping of the original C++ implementation given by the authors
 of the paper, and evolved from there.
 
 ## Installation
+To install the latest release, run
+```shell
+pip install pymuvr
+```
+If you prefer installing from git, use
 ```shell
 git clone https://github.com/epiasini/pymuvr.git
 cd pymuvr
 python setup.py install
 ```
+Note that you'll get testing and benchbark scripts only if you install
+manually (i.e. not via pip).
 
 ## Usage
 The module exposes two functions:
@@ -37,7 +44,7 @@ in such a way that `parallel_trains[i][j][k]` represents the time of the
 kth spike of the jth cell of the ith train.
 `cos` and `tau` are the usual parameters for the multiunit Van Rossum metric.
 
-See `pymuvr/test/test_pymuvr.py` for detailed examples of usage.
+See `test/test_pymuvr.py` for detailed examples of usage.
 
 ## License
 This package is licensed under GPLv3. See COPYING for details.
