@@ -20,21 +20,23 @@ ext_module = Extension("pymuvr",
 setup (name="pymuvr",
        version=version,
        url="https://github.com/epiasini/pymuvr",
-       description = "Multi-unit Van Rossum spike train metric",
-       long_description = long_description,
-       install_requires = ["numpy>=1.7"],
-       author = "Eugenio Piasini",
-       author_email = "e.piasini@ucl.ac.uk",
-       license = "GPLv3+",
+       description="Multi-unit Van Rossum spike train metric",
+       long_description=long_description,
+       install_requires=["numpy>=1.7"],
+       author="Eugenio Piasini",
+       author_email="e.piasini@ucl.ac.uk",
+       license="GPLv3+",
        classifiers=[
            "Development Status :: 5 - Production/Stable",
            "Intended Audience :: Science/Research",
            "Topic :: Scientific/Engineering",
            "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
            "Programming Language :: Python :: Implementation :: CPython",
-           "Programming Language :: Python :: 2.7"
+           "Programming Language :: Python :: 2.7",
+           "Programming Language :: Python :: 3.2",
+           "Programming Language :: Python :: 3.3"
        ],
-       ext_modules = [ext_module],
-       test_suite = "tests",
-       include_package_data = True)
+       ext_modules=[ext_module],
+       test_suite="tests",
+       include_package_data=True)
 

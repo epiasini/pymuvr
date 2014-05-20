@@ -14,20 +14,95 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args);
 
 static PyObject * square_distance_matrix(PyObject *self, PyObject *args);
 
+/*==== module initialisation ====*/
+// See https://wiki.python.org/moin/PortingExtensionModulesToPy3k for
+// the template used to support Python 2 and Python 3 at the same
+// time.
+struct module_state {
+  PyObject *error;
+};
+
+#if PY_MAJOR_VERSION >= 3
+#define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
+#else
+#define GETSTATE(m) (&_state)
+static struct module_state _state;
+#endif
+
+static PyObject *
+error_out(PyObject *m) {
+  struct module_state *st = GETSTATE(m);
+  PyErr_SetString(st->error, "something bad happened");
+  return NULL;
+}
+
 /*==== method table ====*/
-static PyMethodDef pymuvrMethods[] = {
+static PyMethodDef pymuvr_methods[] = {
   {"distance_matrix", distance_matrix, METH_VARARGS, "Return the 'bipartite' rectangular dissimilarity matrix between the observations in the first and the second list."},
   {"square_distance_matrix", square_distance_matrix, METH_VARARGS, "Return the all-to-all dissimilarity matrix for the given list of observations."},
+  {"error_out", (PyCFunction)error_out, METH_NOARGS, NULL},
   {NULL, NULL, 0, NULL}  // Sentinel - marks the end of the structure
 };
 
-/*==== module initialisation ====*/
-PyMODINIT_FUNC
-initpymuvr(void) {
-  (void) Py_InitModule("pymuvr", pymuvrMethods);
-  import_array();
+/*==== back to module initialisation ====*/
+#if PY_MAJOR_VERSION >= 3
+
+static int pymuvr_traverse(PyObject *m, visitproc visit, void *arg) {
+  Py_VISIT(GETSTATE(m)->error);
+  return 0;
 }
 
+static int pymuvr_clear(PyObject *m) {
+  Py_CLEAR(GETSTATE(m)->error);
+  return 0;
+}
+
+
+static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "pymuvr",
+        NULL,
+        sizeof(struct module_state),
+        pymuvr_methods,
+        NULL,
+        pymuvr_traverse,
+        pymuvr_clear,
+        NULL
+};
+
+#define INITERROR return NULL
+
+PyObject * 
+PyInit_pymuvr(void)
+
+#else
+#define INITERROR return
+
+PyMODINIT_FUNC
+initpymuvr(void)
+#endif
+{
+#if PY_MAJOR_VERSION >= 3
+    PyObject *module = PyModule_Create(&moduledef);
+#else
+    PyObject *module = Py_InitModule("pymuvr", pymuvr_methods);
+#endif
+    import_array()
+
+    if (module == NULL)
+        INITERROR;
+    struct module_state *st = GETSTATE(module);
+
+    st->error = PyErr_NewException("pymuvr.Error", NULL, NULL);
+    if (st->error == NULL) {
+        Py_DECREF(module);
+        INITERROR;
+    }
+
+#if PY_MAJOR_VERSION >= 3
+    return module;
+#endif
+}
 
 /*==== function implementations ====*/
 
