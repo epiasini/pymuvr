@@ -8,7 +8,7 @@ version = "1.0.1.dev1"
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Get the long description from the relevant file
-with codecs.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
+with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 ext_module = Extension("pymuvr",
@@ -17,16 +17,24 @@ ext_module = Extension("pymuvr",
                        include_dirs=[numpy.get_include(),
                                      "include"])
 
-setup (name = "pymuvr",
-       version = version,
-       url = 'https://github.com/epiasini/pymuvr',
+setup (name="pymuvr",
+       version=version,
+       url="https://github.com/epiasini/pymuvr",
        description = "Multi-unit Van Rossum spike train metric",
        long_description = long_description,
-       install_requires = ['numpy>=1.7'],
+       install_requires = ["numpy>=1.7"],
        author = "Eugenio Piasini",
        author_email = "e.piasini@ucl.ac.uk",
        license = "GPLv3+",
+       classifiers=[
+           "Development Status :: 5 - Production/Stable",
+           "Intended Audience :: Science/Research",
+           "Topic :: Scientific/Engineering",
+           "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+           "Programming Language :: Python :: Implementation :: CPython",
+           "Programming Language :: Python :: 2.7"
+       ],
        ext_modules = [ext_module],
-       test_suite = 'tests',
+       test_suite = "tests",
        include_package_data = True)
 
