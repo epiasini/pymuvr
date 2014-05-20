@@ -50,5 +50,6 @@ kth spike of the jth cell of the ith train.
 See `test/test_pymuvr.py` for detailed examples of usage.
 
 ## License
-This package is licensed under GPLv3. See COPYING for details.
+This package is licensed under version 3 of the GPL or any later
+version. See COPYING for details.
 
