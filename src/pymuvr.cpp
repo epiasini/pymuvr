@@ -72,7 +72,7 @@ static struct PyModuleDef moduledef = {
 
 #define INITERROR return NULL
 
-PyObject * 
+PyMODINIT_FUNC
 PyInit_pymuvr(void)
 
 #else
