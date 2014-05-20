@@ -1,5 +1,5 @@
 include COPYING
 include README.md
-include requirements.txt
 include include/Van_Rossum_Multiunit.hpp
-include test/benchmark_versus_spykeutils.py
+include tests/*.py
+include examples/*.py

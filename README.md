@@ -47,7 +47,10 @@ in such a way that `parallel_trains[i][j][k]` represents the time of the
 kth spike of the jth cell of the ith train.
 `cos` and `tau` are the usual parameters for the multiunit Van Rossum metric.
 
-See `test/test_pymuvr.py` for detailed examples of usage.
+See `examples/benchmark_versus_spykeutils.py` for an example of usage
+comparing the performance of pymuvr with the pure Python
+implementation of the multiunit Van Rossum distance in
+[spykeutils](https://github.com/rproepp/spykeutils).
 
 ## License
 This package is licensed under version 3 of the GPL or any later
