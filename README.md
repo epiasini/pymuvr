@@ -9,6 +9,9 @@ calculation of Van Rossum distances.'. This package started out as a
 Python wrapping of the original C++ implementation given by the authors
 of the paper, and evolved from there.
 
+## Requirements
+pymuvr requires NumPy>=1.7.
+
 ## Installation
 To install the latest release, run
 ```shell
