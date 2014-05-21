@@ -79,8 +79,8 @@ class TestCompareWithSpykeutils(unittest.TestCase):
         self.n_cells = 20
         self.rate = 30
         self.tstop = 2
-        self.cos = 0.1
-        self.tau = 0.012
+        self.cos = np.linspace(0, 1, 5)
+        self.tau = np.linspace(0, 0.036, 3)
         self.sutils_units = {}
         self.pymuvr_observations = []
         for unit in range(self.n_cells):
@@ -97,13 +97,15 @@ class TestCompareWithSpykeutils(unittest.TestCase):
                 self.pymuvr_observations[ob].append(self.sutils_units[unit][ob].tolist())
         
     def test_compare_with_spykeutils(self):
-        sutils_d = stm.van_rossum_multiunit_dist(self.sutils_units,
-                                                 weighting=self.cos,
-                                                 tau=self.tau)
-        pymuvr_d = pymuvr.square_distance_matrix(self.pymuvr_observations,
-                                                 self.cos,
-                                                 self.tau)
-        np.testing.assert_array_almost_equal(sutils_d, pymuvr_d)
+        for cos in self.cos:
+            for tau in self.tau:
+                sutils_d = stm.van_rossum_multiunit_dist(self.sutils_units,
+                                                         weighting=cos,
+                                                         tau=tau)
+                pymuvr_d = pymuvr.square_distance_matrix(self.pymuvr_observations,
+                                                         cos,
+                                                         tau)
+                np.testing.assert_array_almost_equal(sutils_d, pymuvr_d)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
