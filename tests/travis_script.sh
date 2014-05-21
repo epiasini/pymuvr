@@ -19,7 +19,7 @@ if [ "$with_spykeutils" = true ]; then
     # on the Python version, as at the time of writing spykeutils is
     # not compatible with Python 3. Anyway, the test script will just
     # skip the relevant tests if it finds it can't import spykeutils.
-    pip install spykeutils
+    pip install -q spykeutils
 else
     echo "not trying to install spykeutils"
 fi

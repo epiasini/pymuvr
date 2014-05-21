@@ -7,7 +7,7 @@ env:
   - with_spykeutils=true
   - with_spykeutils=false
 install:
-  - "pip install numpy"
+  - "pip install -q numpy"
   - "pip install ." 
 script:
   - "tests/travis_script.sh"
