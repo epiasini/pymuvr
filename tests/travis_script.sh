@@ -13,7 +13,7 @@ if [ "$with_spykeutils" = true ]; then
     echo "trying to install spykeutils"
     # spykeutils depends on scipy, which depends on libatlas.
     sudo apt-get update -qq
-    sudo apt-get install -qq libatlas-dev
+    sudo apt-get install -qq liblapack-dev libatlas-dev gfortran
     
     # Install spykeutils. This could either succeed or fail depending
     # on the Python version, as at the time of writing spykeutils is
