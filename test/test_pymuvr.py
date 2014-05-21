@@ -29,7 +29,38 @@ def simple_train(mean_isi, max_duration):
         train.append(last_spike)
     return train
 
-class TestDistanceMatrix(unittest.TestCase):
+
+class TestTrivialTrains(unittest.TestCase):
+    def setUp(self):
+        self.tau = 0.012
+        self.cos = 0.5
+
+    def test_empty_spike_trains(self):
+        observations = [[[]], [[]]]
+        d_rectangular = pymuvr.distance_matrix(observations,
+                                               observations,
+                                               self.cos, self.tau)
+        np.testing.assert_array_equal(d_rectangular,
+                                      np.zeros_like(d_rectangular))
+
+    def test_identical_trains(self):
+        observations = [[[1.,2.],[1.5]], [[1.,2.],[1.5]]]
+        d_rectangular = pymuvr.distance_matrix(observations,
+                                               observations,
+                                               self.cos, self.tau)
+        np.testing.assert_array_equal(d_rectangular,
+                                      np.zeros_like(d_rectangular))
+
+    def test_missing_spike(self):
+        observations = [[[1.,2.]], [[1.]]]
+        d_rectangular = pymuvr.distance_matrix(observations,
+                                               observations,
+                                               self.cos, self.tau)
+        np.testing.assert_array_almost_equal(d_rectangular,
+                                             np.array([[0,1],[1,0]]))
+        
+
+class TestRandomTrains(unittest.TestCase):
     def setUp(self):
         n_observations = 10
         n_cells = 100
@@ -64,7 +95,6 @@ class TestDistanceMatrix(unittest.TestCase):
         np.testing.assert_array_almost_equal(d_rectangular, d_square)
 
     def test_empty_spike_train(self):
-        # Regression test: This segfaulted in the C++ code
         observations = [o[:] for o in self.observations]
         observations[0][0] = []
         d_rectangular = pymuvr.distance_matrix(observations[:3],
@@ -90,7 +120,6 @@ class TestCompareWithSpykeutils(unittest.TestCase):
         # observation 1 is identical to observation 0 for all the cells.
         for unit in range(self.n_cells):
             self.sutils_units[unit][1] = self.sutils_units[unit][0]
-            
         for ob in range(self.n_observations):
             self.pymuvr_observations.append([])
             for unit in range(self.n_cells):
