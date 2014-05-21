@@ -80,7 +80,7 @@ class TestCompareWithSpykeutils(unittest.TestCase):
         self.rate = 30
         self.tstop = 2
         self.cos = np.linspace(0, 1, 5)
-        self.tau = np.linspace(0, 0.036, 3)
+        self.tau = np.linspace(0.006, 0.018, 3)
         self.sutils_units = {}
         self.pymuvr_observations = []
         for unit in range(self.n_cells):
