@@ -373,7 +373,10 @@ double big_r_with_exp_markage(vector<double> & train_a, vector<double> & f_a,vec
 	  place--;
       if(place<0)
 	break;
-      x+=e_pos_a[place]*e_neg_b[i]*(f_a[place]+1);	
+      if (train_a[place]==train_b[i])
+	x+=0.5;
+      else
+	x+=e_pos_a[place]*e_neg_b[i]*(f_a[place]+1);	
     }
 
   place=train_b_size-1;
@@ -384,9 +387,11 @@ double big_r_with_exp_markage(vector<double> & train_a, vector<double> & f_a,vec
 	place--;
       if(place<0)
 	break;
-      x+=e_pos_b[place]*e_neg_a[i]*(f_b[place]+1);
+      if (train_b[place]==train_a[i])
+	x+=0.5;
+      else
+	x+=e_pos_b[place]*e_neg_a[i]*(f_b[place]+1);
     }
-
   return x;
 
 }
