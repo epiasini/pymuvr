@@ -66,39 +66,49 @@ class TestRandomTrains(unittest.TestCase):
         n_cells = 100
         mean_isi = 0.03
         max_duration = 2
-        self.tau = 0.012
-        self.cos = 0.5
+        self.cos = np.linspace(0, 1, 3)
+        self.tau = np.linspace(0.006, 0.018, 3)
         self.observations = [[simple_train(mean_isi, max_duration) for c in range(n_cells)] for o in range(n_observations)]
         # observation 1 is identical to observation 0 for all the cells.
         self.observations[0] = self.observations[1][:]
 
     def test_square_distance_matrix(self):
-        d = pymuvr.square_distance_matrix(self.observations, self.cos, self.tau)
-        self.assertEqual(d.shape, (len(self.observations), len(self.observations)))
+        for cos in self.cos:
+            for tau in self.tau:
+                d = pymuvr.square_distance_matrix(self.observations, cos, tau)
+                self.assertEqual(d.shape, (len(self.observations), len(self.observations)))
 
     def test_distance_matrix(self):
-        d = pymuvr.distance_matrix(self.observations[:3],
-                                   self.observations[3:],
-                                   self.cos,
-                                   self.tau)
-        self.assertEqual(d.shape, (3, len(self.observations)-3))
+        for cos in self.cos:
+            for tau in self.tau:
+                d = pymuvr.distance_matrix(self.observations[:3],
+                                           self.observations[3:],
+                                           cos,
+                                           tau)
+                self.assertEqual(d.shape, (3, len(self.observations)-3))
 
     def test_compare_square_and_rectangular(self):
-        d_rectangular = pymuvr.distance_matrix(self.observations,
-                                               self.observations,
-                                               self.cos,
-                                               self.tau)
-        d_square = pymuvr.square_distance_matrix(self.observations,
-                                                 self.cos,
-                                                 self.tau)
-        np.testing.assert_array_almost_equal(d_rectangular, d_square)
+        for cos in self.cos:
+            for tau in self.tau:
+                d_rectangular = pymuvr.distance_matrix(self.observations,
+                                                       self.observations,
+                                                       cos,
+                                                       tau)
+                d_square = pymuvr.square_distance_matrix(self.observations,
+                                                         cos,
+                                                         tau)
+                np.testing.assert_array_almost_equal(d_rectangular, d_square)
 
     def test_empty_spike_train(self):
         observations = [o[:] for o in self.observations]
         observations[0][0] = []
-        d_rectangular = pymuvr.distance_matrix(observations[:3],
-                                               observations[3:],
-                                               self.cos, self.tau)
+        for cos in self.cos:
+            for tau in self.tau:
+                d_rectangular = pymuvr.distance_matrix(observations[:3],
+                                                       observations[3:],
+                                                       cos,
+                                                       tau)
+
 
 @unittest.skipIf(not SPYKEUTILS_IS_AVAILABLE,
                  "can't import spykeutils")
@@ -130,10 +140,14 @@ class TestCompareWithSpykeutils(unittest.TestCase):
                 sutils_d = stm.van_rossum_multiunit_dist(self.sutils_units,
                                                          weighting=cos,
                                                          tau=tau)
-                pymuvr_d = pymuvr.square_distance_matrix(self.pymuvr_observations,
-                                                         cos,
-                                                         tau)
-                np.testing.assert_array_almost_equal(sutils_d, pymuvr_d, decimal=5)
+                # pymuvr_d = pymuvr.square_distance_matrix(self.pymuvr_observations,
+                #                                          cos,
+                #                                          tau)                
+                pymuvr_d = pymuvr.distance_matrix(self.pymuvr_observations,
+                                                  self.pymuvr_observations,
+                                                  cos,
+                                                  tau)
+                np.testing.assert_array_almost_equal(sutils_d, pymuvr_d)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
