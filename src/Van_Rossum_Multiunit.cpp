@@ -369,28 +369,51 @@ double big_r_with_exp_markage(vector<double> & train_a, vector<double> & f_a,vec
 
   for(int i=train_b_size-1;i>=0 ;--i)
     {
+      /*Look for the index of largest spike time in train_a which is
+	smaller or equal than the ith spike time of train_b. Exit from
+	the loop if you don't find any. Note that this, in general, is
+	not the same thing as calculating J(i) in the paper (Houghton
+	and Kreuz 2012), because we allow for train_a[place] to be
+	equal to train_b[i].*/
       while(place>=0&&train_a[place]>train_b[i])
 	  place--;
       if(place<0)
 	break;
+      /*If the spike selected in train_a coincides with the one we're
+	considering in train_b, add 1 to the quantity being
+	calculated. Adjust the 'place' index to point at the previous
+	spike, which now is guaranteed to correspond to the J(i) index
+	in the paper mentioned above; unless it does not exist, in
+	which case we exit from the loop. Note that this passage is
+	not mirrored in the 'symmetric' loop below, as we only need to
+	count each pair of coincident spikes once.*/
       if (train_a[place]==train_b[i])
-	x+=0.5;
-      else
-	x+=e_pos_a[place]*e_neg_b[i]*(f_a[place]+1);	
+	{
+	  x+=1;
+	  place--;
+	}
+      if(place<0)
+	break;
+      /*Compute the ith term of the main sum we're calculating, using
+	the precomputed exponentials and the markage vector.*/
+      x+=e_pos_a[place]*e_neg_b[i]*(f_a[place]+1);	
     }
 
   place=train_b_size-1;
 
   for(int i=train_a_size-1;i>=0 ;--i)
     {
-      while(place>=0&&train_b[place]>train_a[i])
+      /*Unlike above, calculate directly the index corresponding to
+	the largest spike time in train_b which is _strictly_ smaller
+	than the ith spike time of train_a. Exit from the loop if you
+	don't find any.*/
+      while(place>=0&&train_b[place]>=train_a[i])
 	place--;
       if(place<0)
 	break;
-      if (train_b[place]==train_a[i])
-	x+=0.5;
-      else
-	x+=e_pos_b[place]*e_neg_a[i]*(f_b[place]+1);
+      /*Compute the ith term of the main sum we're calculating, using
+	the precomputed exponentials and the markage vector.*/      
+      x+=e_pos_b[place]*e_neg_a[i]*(f_b[place]+1);
     }
   return x;
 

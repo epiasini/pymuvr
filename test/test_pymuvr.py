@@ -91,7 +91,6 @@ class TestRandomTrains(unittest.TestCase):
         d_square = pymuvr.square_distance_matrix(self.observations,
                                                  self.cos,
                                                  self.tau)
-
         np.testing.assert_array_almost_equal(d_rectangular, d_square)
 
     def test_empty_spike_train(self):
@@ -134,7 +133,7 @@ class TestCompareWithSpykeutils(unittest.TestCase):
                 pymuvr_d = pymuvr.square_distance_matrix(self.pymuvr_observations,
                                                          cos,
                                                          tau)
-                np.testing.assert_array_almost_equal(sutils_d, pymuvr_d)
+                np.testing.assert_array_almost_equal(sutils_d, pymuvr_d, decimal=5)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
