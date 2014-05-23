@@ -37,27 +37,34 @@ class TestTrivialTrains(unittest.TestCase):
 
     def test_empty_spike_trains(self):
         observations = [[[]], [[]]]
-        d_rectangular = pymuvr.distance_matrix(observations,
-                                               observations,
-                                               self.cos, self.tau)
-        np.testing.assert_array_equal(d_rectangular,
-                                      np.zeros_like(d_rectangular))
+        d = pymuvr.distance_matrix(observations,
+                                   observations,
+                                   self.cos, self.tau)
+        np.testing.assert_array_equal(d, np.zeros_like(d))
 
     def test_identical_trains(self):
         observations = [[[1.,2.],[1.5]], [[1.,2.],[1.5]]]
-        d_rectangular = pymuvr.distance_matrix(observations,
-                                               observations,
-                                               self.cos, self.tau)
-        np.testing.assert_array_equal(d_rectangular,
-                                      np.zeros_like(d_rectangular))
+        d = pymuvr.distance_matrix(observations,
+                                   observations,
+                                   self.cos, self.tau)
+        np.testing.assert_array_equal(d, np.zeros_like(d))
 
     def test_missing_spike(self):
         observations = [[[1.,2.]], [[1.]]]
-        d_rectangular = pymuvr.distance_matrix(observations,
-                                               observations,
-                                               self.cos, self.tau)
-        np.testing.assert_array_equal(d_rectangular,
-                                      np.array([[0,1],[1,0]]))
+        d = pymuvr.distance_matrix(observations,
+                                   observations,
+                                   self.cos, self.tau)
+        np.testing.assert_array_equal(d, np.array([[0,1],[1,0]]))
+
+    def test_small_tau_limit(self):
+        observations = [[[1,2]], [[1,2]], [[1]]]
+        d = pymuvr.square_distance_matrix(observations, self.cos, 1e-4)
+        np.testing.assert_allclose(d, np.array([[0,0,1],[0,0,1],[1,1,0]]))
+
+    def test_large_tau_limit(self):
+        observations = [[[1,2]], [[1,2]], [[1]]]
+        d = pymuvr.square_distance_matrix(observations, self.cos, 1e4)
+        np.testing.assert_allclose(d, np.array([[0,0,1],[0,0,1],[1,1,0]]))
         
 
 class TestRandomTrains(unittest.TestCase):
@@ -67,7 +74,7 @@ class TestRandomTrains(unittest.TestCase):
         mean_isi = 0.03
         max_duration = 2
         self.cos = np.linspace(0, 1, 3)
-        self.tau = np.linspace(0.006, 0.018, 3)
+        self.tau = np.linspace(0.001, 0.018, 3)
         self.observations = [[simple_train(mean_isi, max_duration) for c in range(n_cells)] for o in range(n_observations)]
         # observation 1 is identical to observation 0 for all the cells.
         self.observations[0] = self.observations[1][:]
