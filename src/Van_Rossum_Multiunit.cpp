@@ -89,8 +89,8 @@ void d_exp(double **d_matrix,vector<vector<vector<double> > > & trains, double t
   unsigned int big_n=trains.size();
   unsigned int big_p=trains.front().size();
 
-  vector<vector<vector<double> > > exp_ps(big_n,vector<vector<double> >(big_p));
-  vector<vector<vector<double> > > exp_ns(big_n,vector<vector<double> >(big_p));
+  vector<vector<vector<long double> > > exp_ps(big_n,vector<vector<long double> >(big_p));
+  vector<vector<vector<long double> > > exp_ns(big_n,vector<vector<long double> >(big_p));
  
   for(unsigned int n=0;n<big_n ;++n)
     for(unsigned int p=0;p<big_p ;++p)
@@ -143,8 +143,8 @@ void d_exp_markage(double **d_matrix,vector<vector<vector<double> > > & trains, 
     }
   }
 
-  vector<vector<vector<double> > > exp_ps(big_n,vector<vector<double> >(big_p));
-  vector<vector<vector<double> > > exp_ns(big_n,vector<vector<double> >(big_p));
+  vector<vector<vector<long double> > > exp_ps(big_n,vector<vector<long double> >(big_p));
+  vector<vector<vector<long double> > > exp_ns(big_n,vector<vector<long double> >(big_p));
 
   for(unsigned int n=0;n<big_n ;++n)
     for(unsigned int p=0;p<big_p ;++p)
@@ -203,10 +203,10 @@ void d_exp_markage_rect(double **d_matrix,
   }
 
 
-  vector<vector<vector<double> > > exp_ps1(big_n,vector<vector<double> >(big_p));
-  vector<vector<vector<double> > > exp_ns1(big_n,vector<vector<double> >(big_p));
-  vector<vector<vector<double> > > exp_ps2(big_m,vector<vector<double> >(big_p));
-  vector<vector<vector<double> > > exp_ns2(big_m,vector<vector<double> >(big_p));
+  vector<vector<vector<long double> > > exp_ps1(big_n,vector<vector<long double> >(big_p));
+  vector<vector<vector<long double> > > exp_ns1(big_n,vector<vector<long double> >(big_p));
+  vector<vector<vector<long double> > > exp_ps2(big_m,vector<vector<long double> >(big_p));
+  vector<vector<vector<long double> > > exp_ns2(big_m,vector<vector<long double> >(big_p));
 
   for(unsigned int n=0;n<big_n ;++n)
     for(unsigned int p=0;p<big_p ;++p)
@@ -277,7 +277,7 @@ double big_r(vector<double> & u,double tau)
 }
 
 
-double big_r_with_exp(vector<double> & u,vector<double> & exp_p,vector<double> & exp_m,double tau)
+double big_r_with_exp(vector<double> & u,vector<long double> & exp_p,vector<long double> & exp_m,double tau)
 {
   unsigned int u_size=u.size();
 
@@ -332,7 +332,7 @@ double big_r(vector<double> & u_a,vector<double> & u_b,double tau)
 }
 
 
-double big_r_with_exp(vector<double> & u_a,vector<double> & exp_p_a,vector<double> & exp_m_a,vector<double> & u_b,vector<double> & exp_p_b,vector<double> & exp_m_b,double tau)
+double big_r_with_exp(vector<double> & u_a,vector<long double> & exp_p_a,vector<long double> & exp_m_a,vector<double> & u_b,vector<long double> & exp_p_b,vector<long double> & exp_m_b,double tau)
 {
   unsigned int u_a_size=u_a.size();
   unsigned int u_b_size=u_b.size();
@@ -353,7 +353,7 @@ double big_r_with_exp(vector<double> & u_a,vector<double> & exp_p_a,vector<doubl
 
 }
 
-double big_r_with_exp_markage(vector<double> & train_a, vector<double> & f_a,vector<double> & e_pos_a,vector<double> & e_neg_a,vector<double> & train_b, vector<double> & f_b,vector<double> & e_pos_b,vector<double> & e_neg_b)
+double big_r_with_exp_markage(vector<double> & train_a, vector<double> & f_a,vector<long double> & e_pos_a,vector<long double> & e_neg_a,vector<double> & train_b, vector<double> & f_b,vector<long double> & e_pos_b,vector<long double> & e_neg_b)
 {
   
   unsigned int train_a_size=train_a.size();
@@ -421,7 +421,7 @@ double big_r_with_exp_markage(vector<double> & train_a, vector<double> & f_a,vec
 
 
 
-void expage(vector<double> & e_pos, vector<double> & e_neg,vector<double> & train,double tau)
+void expage(vector<long double> & e_pos, vector<long double> & e_neg,vector<double> & train,double tau)
 {
 
   unsigned int train_size=train.size();
@@ -431,14 +431,14 @@ void expage(vector<double> & e_pos, vector<double> & e_neg,vector<double> & trai
   
   for(unsigned int i=0;i<train_size ;++i)
     {
-      e_pos[i]=(exp(train[i]/tau));
-      e_neg[i]=(exp(-train[i]/tau));
+      e_pos[i]=exp((long double)(train[i]/tau));
+      e_neg[i]=exp((long double)(-train[i]/tau));
     }
   
 
 }
 
-void markage(vector<double> & f, vector<double> & e_pos, vector<double> & e_neg, vector<double> & train,double tau)
+void markage(vector<double> & f, vector<long double> & e_pos, vector<long double> & e_neg, vector<double> & train,double tau)
 {
 
   unsigned int train_size=train.size();
