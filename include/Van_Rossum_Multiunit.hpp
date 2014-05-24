@@ -28,7 +28,11 @@ using namespace std;
  *
  * \param[in] trains The set of multi unit spike trains.
  *
- * \param[in] tau Decay time constant for the exponential kernel.
+ * \param[in] tau Time scale for the exponential kernel. There is a
+ * limit to how small tau can be compared to the absolute value of the
+ * spike times. An exception will be raised if this limit is exceeded;
+ * its value is system-dependent, but as a rule of thumb tau and the
+ * spike times should be within 4 orders of magnitude of each other.
  *
  * \param[in] c Cosine of the multi-unit mixing angle. c=0 corresponds
  * to labelled-line code, c=1 to summed-population code.
@@ -49,7 +53,11 @@ void d_exp_markage(double **d_matrix,
  *
  * \param[in] trains1,trains2 The sets of multi unit spike trains.
  *
- * \param[in] tau Decay time constant for the exponential kernel.
+ * \param[in] tau Time scale for the exponential kernel. There is a
+ * limit to how small tau can be compared to the absolute value of the
+ * spike times. An exception will be raised if this limit is exceeded;
+ * its value is system-dependent, but as a rule of thumb tau and the
+ * spike times should be within 4 orders of magnitude of each other.
  *
  * \param[in] c Cosine of the multi-unit mixing angle. c=0 corresponds
  * to labelled-line code, c=1 to summed-population code.
