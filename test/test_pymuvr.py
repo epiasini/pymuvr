@@ -58,12 +58,12 @@ class TestTrivialTrains(unittest.TestCase):
 
     def test_small_tau_limit(self):
         observations = [[[1,2]], [[1,2]], [[1]]]
-        d = pymuvr.square_distance_matrix(observations, self.cos, 1e-4)
+        d = pymuvr.square_distance_matrix(observations, self.cos, 1e-3)
         np.testing.assert_allclose(d, np.array([[0,0,1],[0,0,1],[1,1,0]]))
 
     def test_large_tau_limit(self):
         observations = [[[1,2]], [[1,2]], [[1]]]
-        d = pymuvr.square_distance_matrix(observations, self.cos, 1e4)
+        d = pymuvr.square_distance_matrix(observations, self.cos, 1e20)
         np.testing.assert_allclose(d, np.array([[0,0,1],[0,0,1],[1,1,0]]))
         
 

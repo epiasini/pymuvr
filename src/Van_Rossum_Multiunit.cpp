@@ -94,7 +94,12 @@ void d_exp(double **d_matrix,vector<vector<vector<double> > > & trains, double t
  
   for(unsigned int n=0;n<big_n ;++n)
     for(unsigned int p=0;p<big_p ;++p)
-      expage(exp_ps[n][p], exp_ns[n][p],trains[n][p],tau);  
+      try{
+	expage(exp_ps[n][p], exp_ns[n][p],trains[n][p],tau);  
+      }
+      catch (char const * e){
+	throw;
+      }
 
   vector<double> squares(big_n,0.0);
 
@@ -148,7 +153,13 @@ void d_exp_markage(double **d_matrix,vector<vector<vector<double> > > & trains, 
 
   for(unsigned int n=0;n<big_n ;++n)
     for(unsigned int p=0;p<big_p ;++p)
-      expage(exp_ps[n][p], exp_ns[n][p],trains[n][p],tau);  
+      try{
+	expage(exp_ps[n][p], exp_ns[n][p],trains[n][p],tau);  
+      }
+      catch (char const * e){
+	throw;
+      }
+
 
   vector<vector<vector<double> > > fs(big_n,vector<vector<double> >(big_p));
   
@@ -210,10 +221,20 @@ void d_exp_markage_rect(double **d_matrix,
 
   for(unsigned int n=0;n<big_n ;++n)
     for(unsigned int p=0;p<big_p ;++p)
-      expage(exp_ps1[n][p], exp_ns1[n][p],trains1[n][p],tau);  
+      try{
+	expage(exp_ps1[n][p], exp_ns1[n][p],trains1[n][p],tau);  
+      }
+      catch (char const * e){
+	throw;
+      }
   for(unsigned int n=0;n<big_m ;++n)
     for(unsigned int p=0;p<big_p ;++p)
-      expage(exp_ps2[n][p], exp_ns2[n][p],trains2[n][p],tau);  
+      try{
+	expage(exp_ps2[n][p], exp_ns2[n][p],trains2[n][p],tau);  
+      }
+      catch (char const * e){
+	throw;
+      }
 
   vector<vector<vector<double> > > fs1(big_n,vector<vector<double> >(big_p));
   vector<vector<vector<double> > > fs2(big_m,vector<vector<double> >(big_p));
@@ -435,6 +456,12 @@ void expage(vector<long double> & e_pos, vector<long double> & e_neg,vector<doub
       e_neg[i]=exp((long double)(-train[i]/tau));
     }
   
+  /*Check if any over/underflow occurred while calculating the
+    exponentials*/
+  if (train_size>0 && (e_neg.front()==0 || !isfinite(e_pos.back())))
+    {
+      throw "tau is too small compared to the spike times. Please use a larger value for tau, or shorter spike trains.";
+    }
 
 }
 

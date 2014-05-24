@@ -55,8 +55,8 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
   big_n = PyList_Size(observations1);
   big_m = PyList_Size(observations2);
   big_p = PyList_Size(PyList_GetItem(observations1, (Py_ssize_t)0));
-  if (PyList_Size(PyList_GetItem(observations1, (Py_ssize_t)0)) != big_p){
-    cout << "pymuvr: the observations in both lists must have the same number of cells." << endl;
+  if (PyList_Size(PyList_GetItem(observations2, (Py_ssize_t)0)) != big_p){
+    PyErr_SetString(PyExc_RuntimeError, "pymuvr: the observations in both lists must have the same number of cells.");
     return NULL;
   }
   vector<vector<vector<double> > > trains1(big_n,vector<vector<double> >(big_p));
@@ -86,11 +86,18 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
   dims[1] = big_m;
   py_d_matrix = PyArray_SimpleNew(2, dims, NPY_DOUBLE);
   descr = PyArray_DescrFromType(NPY_DOUBLE);
-  if (PyArray_AsCArray (&py_d_matrix, &c_d_matrix, dims, 2, descr) == -1)
+  if (PyArray_AsCArray (&py_d_matrix, &c_d_matrix, dims, 2, descr) == -1){
+    PyErr_SetString(PyExc_RuntimeError, "pymuvr: something went wrong while allocating the dissimilarity matrix.");
     goto fail;
-
+  }
   // perform the core distance calculations
-  d_exp_markage_rect(c_d_matrix, trains1, trains2, tau, cos);
+  try{
+    d_exp_markage_rect(c_d_matrix, trains1, trains2, tau, cos);
+  }
+  catch (char const* e){
+    PyErr_SetString(PyExc_RuntimeError, e);
+    goto fail;
+  }
 
   // free the memory used by the data structure needed for direct
   // access to the numpy array
@@ -147,13 +154,18 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
   py_d_matrix = PyArray_SimpleNew(2, dims, NPY_DOUBLE);
   descr = PyArray_DescrFromType(NPY_DOUBLE);
   if (PyArray_AsCArray (&py_d_matrix, &c_d_matrix, dims, 2, descr) == -1){
-    cout << "pymuvr: failed to convert numpy array to c array." << endl;
+    PyErr_SetString(PyExc_RuntimeError, "pymuvr: something went wrong while allocating the dissimilarity matrix.");
     goto fail;
   }
 
   // perform the core distance calculations
+  try{
   d_exp_markage(c_d_matrix, trains, tau, cos);
-
+  }
+  catch (char const* e){
+    PyErr_SetString(PyExc_RuntimeError, e);
+    goto fail;
+  }
   // free the memory used by the data structure needed for direct
   // access to the numpy array
   PyArray_Free(py_d_matrix, c_d_matrix);
