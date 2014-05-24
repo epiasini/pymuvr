@@ -13,7 +13,10 @@ of the paper, and evolved from there with bugfixes and improvements.
 Full documentation is hosted at http://pymuvr.readthedocs.org/
 
 ## Requirements
-pymuvr requires NumPy>=1.7.
+- Python 2.7 or 3.x.
+- NumPy>=1.7.
+- C++ development tools and Standard Library (package `build-essential` on Debian).
+- Python development tools (package `python-dev` on Debian).
 
 ## Installation
 To install the latest release, run
