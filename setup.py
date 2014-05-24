@@ -3,12 +3,12 @@ import os
 import codecs
 import numpy
 
-version = "1.1.0.dev1"
+version = "1.1.0"
 
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Get the long description from the relevant file
-with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
+with codecs.open(os.path.join(here, "README.rst"), encoding="utf-8") as f:
     long_description = f.read()
 
 ext_module = Extension("pymuvr",

@@ -101,7 +101,7 @@ class TestRandomTrains(unittest.TestCase):
                 d_square = pymuvr.square_distance_matrix(self.observations,
                                                          cos,
                                                          tau)
-                np.testing.assert_allclose(d_rectangular, d_square, atol=1e-5)
+                np.testing.assert_allclose(d_rectangular, d_square, atol=5e-5)
 
     def test_empty_spike_train(self):
         observations = [o[:] for o in self.observations]
@@ -148,7 +148,7 @@ class TestCompareWithSpykeutils(unittest.TestCase):
                                                   self.pymuvr_observations,
                                                   cos,
                                                   tau)
-                np.testing.assert_allclose(sutils_d, pymuvr_d, atol=1e-5)
+                np.testing.assert_allclose(sutils_d, pymuvr_d, atol=5e-5)
 
     def test_compare_square_with_spykeutils(self):
         for cos in self.cos:
@@ -159,7 +159,7 @@ class TestCompareWithSpykeutils(unittest.TestCase):
                 pymuvr_d_square = pymuvr.square_distance_matrix(self.pymuvr_observations,
                                                                 cos,
                                                                 tau)                
-                np.testing.assert_allclose(sutils_d, pymuvr_d_square, atol=1e-5)
+                np.testing.assert_allclose(sutils_d, pymuvr_d_square, atol=5e-5)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
