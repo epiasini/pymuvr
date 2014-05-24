@@ -36,3 +36,7 @@ nosetests.xml
 /bin/output.png
 /bin/output.pstats
 /MANIFEST
+
+# sphinx and doxygen
+doc/_build
+doc/_doxygen

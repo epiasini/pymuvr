@@ -7,7 +7,7 @@ implementation with markage vector and precomputed exponential factor,
 as described in Houghton and Kreuz, 2012, 'On the efficient
 calculation of Van Rossum distances.'. This package started out as a 
 Python wrapping of the original C++ implementation given by the authors
-of the paper, and evolved from there.
+of the paper, and evolved from there with bugfixes and improvements.
 
 ## Requirements
 pymuvr requires NumPy>=1.7.
