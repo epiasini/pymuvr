@@ -7,134 +7,6 @@
 
 using namespace std;
 
-//trains[p][i]
-
-//single train
-double d(vector<vector<double> > & trains_a,vector<vector<double> > & trains_b, double tau,double c)
-{
-
-  unsigned int big_p=trains_a.size();
-
-  double d=0; 
-
-  //R_p
-  for(unsigned int p=0;p<big_p ;++p)
-    {
-      d+=big_r(trains_a[p],tau);
-      d+=big_r(trains_b[p],tau);
-      d-=2*big_r(trains_a[p],trains_b[p],tau);
-    }
-
-  double r_pq=0;
-
-  for(unsigned int p=0;p<big_p-1 ;++p)
-    for(unsigned int q=p+1;q<big_p ;++q)
-      {
-	r_pq+=big_r(trains_a[p],trains_a[q],tau);
-	r_pq+=big_r(trains_b[p],trains_b[q],tau);
-	r_pq-=big_r(trains_a[p],trains_b[q],tau);
-	r_pq-=big_r(trains_b[p],trains_a[q],tau);
-      }
-
-  d+=2*c*r_pq;
-
-  return sqrt(d);
-
-}
-
-//trains[n][p][i]
-
-void d(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,double c)
-{
-  unsigned int big_n=trains.size();
-  unsigned int big_p=trains.front().size();
-
-  vector<double> squares(big_n,0.0);
-
-  for(unsigned int n=0;n<big_n;++n)
-    {
-      for(unsigned int p=0;p<big_p ;++p)
-	squares[n]+=big_r(trains[n][p],tau);
-      for(unsigned int p=0;p<big_p-1 ;++p)
-	for(unsigned int q=p+1;q<big_p ;++q)
-	  squares[n]+=2*c*big_r(trains[n][p],trains[n][q],tau);
-    }
-
-  for(unsigned int n=0;n<big_n-1 ;++n)
-    for(unsigned int m=n+1;m<big_n ;++m)
-      {
-	double d=squares[n]+squares[m];
-	for(unsigned int p=0;p<big_p ;++p)
-	  d-=2*big_r(trains[n][p],trains[m][p],tau);
-	  
-	for(unsigned int p=0;p<big_p-1 ;++p)
-	  for(unsigned int q=p+1;q<big_p ;++q)
-	    {
-	      d-=2*c*big_r(trains[n][p],trains[m][q],tau);
-	      d-=2*c*big_r(trains[m][p],trains[n][q],tau);
-	    }
-
-	d_matrix[n][m]=sqrt(2*d/tau);
-	d_matrix[m][n]=sqrt(2*d/tau);
-
-      }
-}
-
-
-//trains[n][p][i]
-
-void d_exp(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,double c)
-{
-
-  unsigned int big_n=trains.size();
-  unsigned int big_p=trains.front().size();
-
-  vector<vector<vector<long double> > > exp_ps(big_n,vector<vector<long double> >(big_p));
-  vector<vector<vector<long double> > > exp_ns(big_n,vector<vector<long double> >(big_p));
- 
-  for(unsigned int n=0;n<big_n ;++n)
-    for(unsigned int p=0;p<big_p ;++p)
-      try{
-	expage(exp_ps[n][p], exp_ns[n][p],trains[n][p],tau);  
-      }
-      catch (char const * e){
-	throw;
-      }
-
-  vector<double> squares(big_n,0.0);
-
-  for(unsigned int n=0;n<big_n;++n)
-    {
-      for(unsigned int p=0;p<big_p ;++p)
-	squares[n]+=big_r_with_exp(trains[n][p],exp_ps[n][p],exp_ns[n][p],tau);
-      for(unsigned int p=0;p<big_p-1 ;++p)
-	for(unsigned int q=p+1;q<big_p ;++q)
-	  squares[n]+=2*c*big_r_with_exp(trains[n][p],exp_ps[n][p],exp_ns[n][p],trains[n][q],exp_ps[n][q],exp_ns[n][q],tau);
-    }
-
-  for(unsigned int n=0;n<big_n-1 ;++n)
-    for(unsigned int m=n+1;m<big_n ;++m)
-      {
-	double d=squares[n]+squares[m];
-	for(unsigned int p=0;p<big_p ;++p)
-	  d-=2*big_r_with_exp(trains[n][p],exp_ps[n][p],exp_ns[n][p],trains[m][p],exp_ps[m][p],exp_ns[m][p],tau);
-	  
-	for(unsigned int p=0;p<big_p-1 ;++p)
-	  for(unsigned int q=p+1;q<big_p ;++q)
-	    {
-	      d-=2*c*big_r_with_exp(trains[n][p],exp_ps[n][p],exp_ns[n][p],trains[m][q],exp_ps[m][q],exp_ns[m][q],tau);
-	      d-=2*c*big_r_with_exp(trains[m][p],exp_ps[m][p],exp_ns[m][p],trains[n][q],exp_ps[n][q],exp_ns[n][q],tau);
-	    }
-
-	d_matrix[n][m]=sqrt(d);
-	d_matrix[m][n]=sqrt(d);
-
-      }
-}
-
-
-//trains[n][p][i]
-
 void d_exp_markage(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,double c)
 {
 
@@ -197,6 +69,7 @@ void d_exp_markage(double **d_matrix,vector<vector<vector<double> > > & trains, 
 	} // else, leave it at 0.
       }
 }
+
 
 void d_exp_markage_rect(double **d_matrix,
 			vector<vector<vector<double> > > & trains1,
@@ -280,42 +153,6 @@ void d_exp_markage_rect(double **d_matrix,
 }
 
 
-double big_r(vector<double> & u,double tau)
-{
-  unsigned int u_size=u.size();
-
-  if(u_size==0)
-    return 0;
-
-  double total=u_size;
-
-  for(unsigned int i=0;i<u_size ;++i)
-    for(unsigned int j=i+1;j<u_size; j++)
-      total+=2*exp(-(u[j]-u[i])/tau);
-
-  return total;
-
-}
-
-
-double big_r_with_exp(vector<double> & u,vector<long double> & exp_p,vector<long double> & exp_m,double tau)
-{
-  unsigned int u_size=u.size();
-
-  if(u_size==0)
-    return 0;
-
-  double total=u_size;
-
-  for(unsigned int i=0;i<u_size ;++i)
-    for(unsigned int j=i+1;j<u_size; j++)
-      total+=2*exp_p[i]*exp_m[j];
-
-  return total;
-
-}
-
-
 double big_r_with_exp_markage(vector<double> & fs)
 {
   unsigned int f_size=fs.size();
@@ -333,47 +170,6 @@ double big_r_with_exp_markage(vector<double> & fs)
 }
 
 
-double big_r(vector<double> & u_a,vector<double> & u_b,double tau)
-{
-  unsigned int u_a_size=u_a.size();
-  unsigned int u_b_size=u_b.size();
-
-
-  if(u_a_size==0||u_b_size==0)
-    return 0;
-
-  double total=0;
-
-  for(unsigned int i=0;i<u_a_size ;++i)
-    for(unsigned int j=0;j<u_b_size; j++)
-      total+=exp(-fabs(u_a[i]-u_b[j])/tau);
-
-  return total;
-
-}
-
-
-double big_r_with_exp(vector<double> & u_a,vector<long double> & exp_p_a,vector<long double> & exp_m_a,vector<double> & u_b,vector<long double> & exp_p_b,vector<long double> & exp_m_b,double tau)
-{
-  unsigned int u_a_size=u_a.size();
-  unsigned int u_b_size=u_b.size();
-
-  if(u_a_size==0||u_b_size==0)
-    return 0;
-
-  double total=0;
-
-  for(unsigned int i=0;i<u_a_size ;++i)
-    for(unsigned int j=0;j<u_b_size; j++)
-      if(u_a[i]>u_b[j])
-	total+=exp_m_a[i]*exp_p_b[j];
-      else
-	total+=exp_p_a[i]*exp_m_b[j];
-
-  return total;
-
-}
-
 double big_r_with_exp_markage(vector<double> & train_a, vector<double> & f_a,vector<long double> & e_pos_a,vector<long double> & e_neg_a,vector<double> & train_b, vector<double> & f_b,vector<long double> & e_pos_b,vector<long double> & e_neg_b)
 {
   
@@ -390,24 +186,28 @@ double big_r_with_exp_markage(vector<double> & train_a, vector<double> & f_a,vec
 
   for(int i=train_b_size-1;i>=0 ;--i)
     {
-      /*Look for the index of largest spike time in train_a which is
+      /*
+	Look for the index of largest spike time in train_a which is
 	smaller or equal than the ith spike time of train_b. Exit from
 	the loop if you don't find any. Note that this, in general, is
 	not the same thing as calculating J(i) in the paper (Houghton
 	and Kreuz 2012), because we allow for train_a[place] to be
-	equal to train_b[i].*/
+	equal to train_b[i].
+      */
       while(place>=0&&train_a[place]>train_b[i])
 	  place--;
       if(place<0)
 	break;
-      /*If the spike selected in train_a coincides with the one we're
+      /*
+	If the spike selected in train_a coincides with the one we're
 	considering in train_b, add 1 to the quantity being
 	calculated. Adjust the 'place' index to point at the previous
 	spike, which now is guaranteed to correspond to the J(i) index
 	in the paper mentioned above; unless it does not exist, in
 	which case we exit from the loop. Note that this passage is
 	not mirrored in the 'symmetric' loop below, as we only need to
-	count each pair of coincident spikes once.*/
+	count each pair of coincident spikes once.
+      */
       if (train_a[place]==train_b[i])
 	{
 	  x+=1;
@@ -415,8 +215,10 @@ double big_r_with_exp_markage(vector<double> & train_a, vector<double> & f_a,vec
 	}
       if(place<0)
 	break;
-      /*Compute the ith term of the main sum we're calculating, using
-	the precomputed exponentials and the markage vector.*/
+      /*
+	Compute the ith term of the main sum we're calculating, using
+	the precomputed exponentials and the markage vector.
+      */
       x+=e_pos_a[place]*e_neg_b[i]*(f_a[place]+1);	
     }
 
@@ -424,16 +226,20 @@ double big_r_with_exp_markage(vector<double> & train_a, vector<double> & f_a,vec
 
   for(int i=train_a_size-1;i>=0 ;--i)
     {
-      /*Unlike above, calculate directly the index corresponding to
+      /*
+	Unlike above, calculate directly the index corresponding to
 	the largest spike time in train_b which is _strictly_ smaller
 	than the ith spike time of train_a. Exit from the loop if you
-	don't find any.*/
+	don't find any.
+      */
       while(place>=0&&train_b[place]>=train_a[i])
 	place--;
       if(place<0)
 	break;
-      /*Compute the ith term of the main sum we're calculating, using
-	the precomputed exponentials and the markage vector.*/      
+      /*
+	Compute the ith term of the main sum we're calculating, using
+	the precomputed exponentials and the markage vector.
+      */
       x+=e_pos_b[place]*e_neg_a[i]*(f_b[place]+1);
     }
   return x;
