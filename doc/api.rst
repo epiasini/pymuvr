@@ -8,5 +8,7 @@ This section documents the functions declared in
 
 .. doxygenfunction:: d_exp_markage
 
+----------
+
 .. doxygenfunction:: d_exp_markage_rect
 
