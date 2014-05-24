@@ -13,12 +13,9 @@ try:
     import quantities as pq
     import spykeutils.spike_train_generation as stg
     import spykeutils.spike_train_metrics as stm
-    SPYKEUTILS_IS_AVAILABLE = not bool(os.environ['without_spykeutils'])
+    SPYKEUTILS_IS_AVAILABLE = True
 except ImportError:
     SPYKEUTILS_IS_AVAILABLE = False
-except KeyError:
-    SPYKEUTILS_IS_AVAILABLE = True
-    
 
 def simple_train(mean_isi, max_duration):
     train = []
