@@ -72,8 +72,25 @@ void d_exp_markage_rect(double **d_matrix,
 /*Internal helper functions*/
 
 double big_r_with_exp_markage(vector<double> & fs);
-double big_r_with_exp_markage(vector<double> & train_a, vector<double> & f_a,vector<long double> & e_pos_a,vector<long double> & e_neg_a,vector<double> & train_b, vector<double> & f_b,vector<long double> & e_pos_b,vector<long double> & e_neg_b);
-void expage(vector<long double> & e_pos, vector<long double> & e_neg,vector<double> & train,double tau);
-void markage(vector<double> & f, vector<long double> & e_pos, vector<long double> & e_neg, vector<double> & train,double tau);
+
+double big_r_with_exp_markage(vector<double> & train_a,
+			      vector<double> & f_a,
+			      vector<long double> & e_pos_a,
+			      vector<long double> & e_neg_a,
+			      vector<double> & train_b,
+			      vector<double> & f_b,
+			      vector<long double> & e_pos_b,
+			      vector<long double> & e_neg_b);
+
+void expage(vector<long double> & e_pos,
+	    vector<long double> & e_neg,
+	    vector<double> & train,
+	    double tau);
+
+void markage(vector<double> & f,
+	     vector<long double> & e_pos,
+	     vector<long double> & e_neg,
+	     vector<double> & train,
+	     double tau);
 
 #endif
