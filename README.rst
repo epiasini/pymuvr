@@ -9,8 +9,8 @@ Overview
 
 Multi-unit Van Rossum spike train metric. This is a kernel-based
 implementation with markage vector and precomputed exponential factor,
-as described in Houghton and Kreuz, 2012, 'On the efficient
-calculation of Van Rossum distances.'. This package started out as a
+as described in Houghton and Kreuz, 2012, *On the efficient
+calculation of Van Rossum distances*. This package started out as a
 Python wrapping of the original C++ implementation given by the
 authors of the paper, and evolved from there with bugfixes and
 improvements.

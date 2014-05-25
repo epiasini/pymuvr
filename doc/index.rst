@@ -8,6 +8,7 @@ pymuvr - fast multi-unit Van Rossum spike train metric
 
 :Author: Eugenio Piasini
 :Contact: e.piasini@ucl.ac.uk
+:PyPI entry: https://pypi.python.org/pypi/pymuvr
 :Source code: https://github.com/epiasini/pymuvr
 
 .. _introduction:
