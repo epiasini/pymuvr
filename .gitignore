@@ -38,5 +38,6 @@ nosetests.xml
 /MANIFEST
 
 # sphinx and doxygen
-doc/_build
-doc/_doxygen
+docs/_build
+docs/_doxygen
+
