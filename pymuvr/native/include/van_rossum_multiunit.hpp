@@ -1,4 +1,4 @@
-/*! \file Van_Rossum_Multiunit.hpp
+/*! \file van_rossum_multiunit.hpp
  *
  *  C++ implementation of a kernel-based algorithm for calculating
  *  multi-unit Van Rossum spike train distances. See Houghton and
