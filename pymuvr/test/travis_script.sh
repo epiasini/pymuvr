@@ -24,4 +24,4 @@ else
     echo "not trying to install spykeutils"
 fi
 
-python tests/test_pymuvr.py
+python pymuvr/test/test_pymuvr.py
