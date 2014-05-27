@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "numpy/arrayobject.h"
-#include "Van_Rossum_Multiunit.hpp"
+#include "van_rossum_multiunit.hpp"
 
 using namespace std;
 
@@ -38,7 +38,7 @@ error_out(PyObject *m) {
 }
 
 /*==== method table ====*/
-static PyMethodDef pymuvr_methods[] = {
+static PyMethodDef bindings_methods[] = {
   {"distance_matrix", distance_matrix, METH_VARARGS, "Return the 'bipartite' rectangular dissimilarity matrix between the observations in the first and the second list."},
   {"square_distance_matrix", square_distance_matrix, METH_VARARGS, "Return the all-to-all dissimilarity matrix for the given list of observations."},
   {"error_out", (PyCFunction)error_out, METH_NOARGS, NULL},
@@ -48,12 +48,12 @@ static PyMethodDef pymuvr_methods[] = {
 /*==== back to module initialisation ====*/
 #if PY_MAJOR_VERSION >= 3
 
-static int pymuvr_traverse(PyObject *m, visitproc visit, void *arg) {
+static int bindings_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(GETSTATE(m)->error);
   return 0;
 }
 
-static int pymuvr_clear(PyObject *m) {
+static int bindings_clear(PyObject *m) {
   Py_CLEAR(GETSTATE(m)->error);
   return 0;
 }
@@ -61,32 +61,32 @@ static int pymuvr_clear(PyObject *m) {
 
 static struct PyModuleDef moduledef = {
         PyModuleDef_HEAD_INIT,
-        "pymuvr",
+        "bindings",
         NULL,
         sizeof(struct module_state),
-        pymuvr_methods,
+        bindings_methods,
         NULL,
-        pymuvr_traverse,
-        pymuvr_clear,
+        bindings_traverse,
+        bindings_clear,
         NULL
 };
 
 #define INITERROR return NULL
 
 PyMODINIT_FUNC
-PyInit_pymuvr(void)
+PyInit_bindings(void)
 
 #else
 #define INITERROR return
 
 PyMODINIT_FUNC
-initpymuvr(void)
+initbindings(void)
 #endif
 {
 #if PY_MAJOR_VERSION >= 3
     PyObject *module = PyModule_Create(&moduledef);
 #else
-    PyObject *module = Py_InitModule("pymuvr", pymuvr_methods);
+    PyObject *module = Py_InitModule("bindings", bindings_methods);
 #endif
     import_array()
 
@@ -94,7 +94,7 @@ initpymuvr(void)
         INITERROR;
     struct module_state *st = GETSTATE(module);
 
-    st->error = PyErr_NewException("pymuvr.Error", NULL, NULL);
+    st->error = PyErr_NewException("bindings.Error", NULL, NULL);
     if (st->error == NULL) {
         Py_DECREF(module);
         INITERROR;

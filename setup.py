@@ -1,9 +1,12 @@
-from setuptools import setup, Extension
+try:
+    from setuptools import setup, Extension
+except ImportError:
+    from distutils.core import setup, Extension
 import os
 import codecs
 import numpy
 
-version = "1.1.0"
+version = '1.2.0.dev2'
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -11,11 +14,11 @@ here = os.path.abspath(os.path.dirname(__file__))
 with codecs.open(os.path.join(here, "README.rst"), encoding="utf-8") as f:
     long_description = f.read()
 
-ext_module = Extension("pymuvr",
-                       sources=[os.path.join("src", "Van_Rossum_Multiunit.cpp"),
-                                os.path.join("src", "pymuvr.cpp")],
+ext_module = Extension("pymuvr.native.bindings",
+                       sources=["pymuvr/native/src/van_rossum_multiunit.cpp",
+                                "pymuvr/native/src/python_bindings.cpp"],
                        include_dirs=[numpy.get_include(),
-                                     "include"])
+                                     "pymuvr/native/include"])
 
 setup (name="pymuvr",
        version=version,
@@ -36,7 +39,12 @@ setup (name="pymuvr",
            "Programming Language :: Python :: 3.2",
            "Programming Language :: Python :: 3.3"
        ],
+       packages=["pymuvr",
+                 "pymuvr.native",
+                 "pymuvr.test"],
        ext_modules=[ext_module],
-       test_suite="tests",
-       include_package_data=True)
+       # examples must be included as package_data
+       package_data={"pymuvr": ["examples/*.py"]},
+       test_suite="pymuvr.test",
+       zip_safe=False)
 

@@ -2,7 +2,7 @@ C++ API reference
 =================
 
 This section documents the functions declared in
-``Van_Rossum_Multiunit.hpp``.
+``native/include/van_rossum_multiunit.hpp``.
 
 ----------
 

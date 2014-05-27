@@ -17,7 +17,7 @@ improvements.
 
 Documentation
 -------------
-Full documentation is hosted at http://pymuvr.readthedocs.org/
+Full documentation is hosted at http://pymuvr.readthedocs.org/.
 
 Requirements
 ------------
@@ -37,9 +37,6 @@ If you prefer installing from git, use::
   git clone https://github.com/epiasini/pymuvr.git
   cd pymuvr
   python setup.py install
-
-Note that you'll get testing and benchbark scripts only if you install
-manually (i.e. not via pip).
 
 Usage
 -----
@@ -77,3 +74,6 @@ License
 This package is licensed under version 3 of the GPL or any later
 version. See COPYING for details.
 
+Getting the source
+------------------
+Source code for pymuvr is hosted at https://github.com/epiasini/pymuvr.
