@@ -71,6 +71,55 @@ void d_exp_markage_rect(double **d_matrix,
 
 /*Internal helper functions*/
 
+
+/*!
+ * All-to-all distance matrix for the limit case where tau=0.
+ */
+void d_square_zero_tau(double **d_matrix,
+		       vector<vector<vector<double> > > & trains,
+		       double c);
+
+/*!
+ * Bipartite distance matrix for the limit case where tau=0.
+ */
+void d_rect_zero_tau(double **d_matrix,
+		     vector<vector<vector<double> > > & trains1,
+		     vector<vector<vector<double> > > & trains2,
+		     double c);
+
+/*!
+ * Distance between a single pair of observations when tau=0.
+ */
+double d_single_observation_zero_tau(vector<vector<double> > & obs1,
+				     vector<vector<double> > & obs2,
+				     double c);
+
+
+/*!
+ * Squared norm of a single-unit spike train if tau=0.
+ *
+ * Note that, with the normalisation we are using, this simply
+ * corresponds to the number of spikes in the spike train. We call it
+ * "square norm" for notational clarity.
+ *
+ */
+int single_unit_square_norm_zero_tau(vector<double> & train);
+
+
+/*!
+ * Scalar product between two single-unit spike trains if tau=0.
+ *
+ * In practice, this counts the number of coincident spike pairs
+ * between train_a and train_b.
+ *
+ * Note that this assumes that neither train_a nor train_b cointain
+ * repeating spikes.
+ *
+ */
+int single_unit_scalar_product_zero_tau(vector<double> & train_a,
+					vector<double> & train_b);
+
+
 double big_r_with_exp_markage(vector<double> & fs);
 
 double big_r_with_exp_markage(vector<double> & train_a,

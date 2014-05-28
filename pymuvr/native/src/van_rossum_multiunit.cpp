@@ -10,6 +10,17 @@ using namespace std;
 void d_exp_markage(double **d_matrix,vector<vector<vector<double> > > & trains, double tau,double c)
 {
 
+
+  /*
+    If tau is zero, we have to use a different algorithm as the
+    expontial kernel becomes a delta function.
+  */
+  if (tau==0)
+    {
+      d_square_zero_tau(d_matrix, trains, c);
+      return;
+    }
+
   unsigned int big_n=trains.size();
   unsigned int big_p=trains.front().size();
 
@@ -78,12 +89,22 @@ void d_exp_markage_rect(double **d_matrix,
 			double c)
 {
 
+  /*
+    If tau is zero, we have to use a different algorithm as the
+    expontial kernel becomes a delta function.
+  */
+  if (tau==0)
+    {
+      d_rect_zero_tau(d_matrix, trains1, trains2, c);
+      return;
+    }
+
   unsigned int big_n=trains1.size();
   unsigned int big_m=trains2.size();
   unsigned int big_p=trains1.front().size();
 
   if (trains2.front().size() != big_p){
-    cout << "d_exp_markage_rect: the observations in both lists must have the same number of cells." << endl;
+    throw "d_exp_markage_rect: the observations in both lists must have the same number of cells.";
   }
 
 
@@ -153,6 +174,103 @@ void d_exp_markage_rect(double **d_matrix,
 }
 
 
+void d_square_zero_tau(double **d_matrix,
+		       vector<vector<vector<double> > > & trains,
+		       double c)
+{
+
+  unsigned int big_n=trains.size();
+
+  for(unsigned int n=0; n<big_n; ++n)
+    {
+      /* Set the diagonal terms of the distance matrix to zero */
+      d_matrix[n][n] = 0;
+      
+      /* Compute off-diagonal terms */
+      for(unsigned int m=n+1; m<big_n; ++m)
+	{
+	  d_matrix[n][m] = d_single_observation_zero_tau(trains[n],
+							 trains[m],
+							 c);
+	  /* The matrix must be symmetric */
+	  d_matrix[m][n] = d_matrix[n][m];
+	}
+    }
+}
+
+void d_rect_zero_tau(double **d_matrix,
+		     vector<vector<vector<double> > > & trains1,
+		     vector<vector<vector<double> > > & trains2,
+		     double c)
+{
+  unsigned int big_n=trains1.size();
+  unsigned int big_m=trains2.size();
+
+  for(unsigned int n=0; n<big_n; ++n)
+    for(unsigned int m=0; m<big_m; ++m)
+      {
+	d_matrix[n][m] = d_single_observation_zero_tau(trains1[n],
+						       trains2[m],
+						       c);
+      }
+}
+
+
+
+double d_single_observation_zero_tau(vector<vector<double> > & obs1,
+				     vector<vector<double> > & obs2,
+				     double c)
+{
+
+  unsigned int cells = obs1.size();
+  if (obs2.size()!=cells)
+    throw "Trying to compare two observations with a different number of cells.";
+
+  double d_same = 0;
+  double d_cross = 0;
+  
+  for(unsigned int p=0; p<cells; ++p)
+    {
+      /* Same-unit ("labelled-line") terms */
+      d_same += single_unit_square_norm_zero_tau(obs1[p]);
+      d_same += single_unit_square_norm_zero_tau(obs2[p]);
+      d_same -= 2 * single_unit_scalar_product_zero_tau(obs1[p],
+							obs2[p]);
+      
+      /* Cross-unit ("summed-population") terms */
+      for(unsigned int q=p+1; q<cells; ++q)
+	{
+	  /* Same-observation, cross-unit */
+	  d_cross += single_unit_scalar_product_zero_tau(obs1[p],
+							 obs1[q]);
+	  d_cross += single_unit_scalar_product_zero_tau(obs2[p],
+							 obs2[q]);
+	  /* Cross-observation, cross-unit */
+	  d_cross -= single_unit_scalar_product_zero_tau(obs1[p],
+							 obs2[q]);
+	  d_cross -= single_unit_scalar_product_zero_tau(obs1[q],
+							 obs2[p]);
+	}
+    }
+  
+  /*
+    Sum same-unit and cross-unit with the appropriate weighting
+    to give the desired interpolation between labelled-line and
+    summed-population distance.
+  */
+  double d = d_same + 2 * c * d_cross;
+
+  if (d>0)
+    {
+      return sqrt(d);
+    } else
+    {
+      return 0;
+    }
+}
+
+
+
 double big_r_with_exp_markage(vector<double> & fs)
 {
   unsigned int f_size=fs.size();
@@ -167,6 +285,48 @@ double big_r_with_exp_markage(vector<double> & fs)
    
   return norm;
 
+}
+
+
+int single_unit_square_norm_zero_tau(vector<double> & train)
+{
+  return train.size();
+}
+
+
+int single_unit_scalar_product_zero_tau(vector<double> & train_a,
+					vector<double> & train_b)
+{
+
+  unsigned int train_a_size=train_a.size();
+  unsigned int train_b_size=train_b.size();
+
+  if(train_a_size==0 || train_b_size==0)
+    return 0;
+
+  int count = 0;
+  int place = train_a_size - 1;
+
+  for (int i=train_b_size-1; i>=0; --i)
+    {
+      /*
+	Look for the index of largest spike time in train_a which is
+	smaller or equal than the ith spike time of train_b. Leave the
+	index set to zero if you don't find any.
+      */
+      while(place>0 && train_a[place]>train_b[i])
+	place--;
+      /*
+	If the spike selected in train_a coincides with the one we're
+	considering in train_b, add 1 to the pair count.
+      */
+      if (train_a[place]==train_b[i])
+	{
+	  count+=1;
+	}
+    }
+
+  return count;
 }
 
 
