@@ -1,6 +1,8 @@
 """
-This is a standalone benchmark script that can be used to compare
-execution times between pymuvr and spykeutils.
+Compares execution times between pymuvr and the pure Python/NumPy
+implementation of the multiunit Van Rossum distance in `spykeutils
+<https://github.com/rproepp/spykeutils>`_.
+
 """
 import numpy as np
 import time

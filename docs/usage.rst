@@ -1,27 +1,23 @@
 Usage
 =====
 
-The module exposes two functions::
+Reference
+---------
 
-  pymuvr.distance_matrix(parallel_trains_1, parallel_trains_2, cos, tau)
+The module exposes two functions:
 
-::
+.. autofunction:: pymuvr.distance_matrix
 
-  pymuvr.square_distance_matrix(parallel_trains, cos, tau)
+.. autofunction:: pymuvr.square_distance_matrix
 
-``distance_matrix`` calculates the *bipartite* (rectangular) dissimilarity
-matrix between the trains in ``parallel_trains_1`` and those in 
-``parallel_trains_2``.
+Examples
+--------
 
-``square_distance_matrix`` calculates the *all-to-all* dissimilarity
-matrix between each pair of trains in parallel_trains. It's an optimised
-form of ``distance_matrix(parallel_trains, parallel_trains, cos, tau)``.
+See the ``examples`` and ``test`` directories in the source
+distribution for detailed examples of usage. These should also have
+been installed alongside the rest of the pymuvr files.
 
-They both return their results as a 2D numpy array.
-
-The ``parallel_trains`` arguments must be thrice-nested lists of spiketimes,
-in such a way that ``parallel_trains[i][j][k]`` represents the time of the
-kth spike of the jth cell of the ith train.
-``cos`` and ``tau`` are the usual parameters for the multiunit Van Rossum metric.
-
-See ``test/test_pymuvr.py`` for detailed examples of usage.
+``examples/benchmark_versus_spykeutils.py`` compares the performance
+of pymuvr with the pure Python/NumPy implementation of the multiunit
+Van Rossum distance in `spykeutils
+<https://github.com/rproepp/spykeutils>`_.

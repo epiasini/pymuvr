@@ -9,19 +9,22 @@ Requirements
 - C++ development tools and Standard Library (package `build-essential` on Debian).
 - Python development tools (package `python-dev` on Debian).
 
-Using *pip*
------------
+Installing via *pip*
+--------------------
 To install the latest release, run::
 
   pip install pymuvr
 
-Using *git* and *setuptools*
-----------------------------
-If you prefer installing from git, use::
+Testing
+-------
 
-  git clone https://github.com/epiasini/pymuvr.git
-  cd pymuvr
-  python setup.py install
+From the root directory of the source distribution, run::
 
-Note that you'll get testing and benchbark scripts only if you install
-manually (i.e. not via pip).
+  python setup.py test
+
+(requires *setuptools*). **Alternatively**, if pymuvr is already
+installed on your system, look for the copy of the ``test_pymuvr.py``
+script installed alongside the rest of the pymuvr files and execute
+it. For example::
+
+  python /usr/lib/pythonX.Y/site-packages/pymuvr/test/test_pymuvr.py
