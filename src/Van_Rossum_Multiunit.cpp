@@ -3,7 +3,19 @@
 #include<cmath>
 #include<iostream>
 
+#ifdef _MSC_VER
+#include <float.h>
+#endif
+
 #include "Van_Rossum_Multiunit.hpp"
+
+// Microsoft compiler does not have isfinite, but _isnan() instead
+#ifdef _MSC_VER
+bool isfinite(long double x)
+{
+    return !_isnan(x);
+}
+#endif
 
 using namespace std;
 
