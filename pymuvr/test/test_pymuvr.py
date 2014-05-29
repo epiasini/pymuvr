@@ -26,7 +26,6 @@ def simple_train(mean_isi, max_duration):
         train.append(last_spike)
     return train
 
-
 class TestTrivialTrains(unittest.TestCase):
     def setUp(self):
         self.tau = 0.012
@@ -54,25 +53,40 @@ class TestTrivialTrains(unittest.TestCase):
         np.testing.assert_array_equal(d, np.array([[0,1],[1,0]]))
 
     def test_small_tau_limit(self):
-        observations = [[[1,2]], [[1,2]], [[1]]]
-        d = pymuvr.square_distance_matrix(observations, self.cos, 1e-3)
-        np.testing.assert_allclose(d, np.array([[0,0,1],[0,0,1],[1,1,0]]))
+        observations = [[[0.1, 0.2, 0.3]],
+                        [[0.1, 0.2, 0.3]],
+                        [[0.1, 0.2, 0.4]],
+                        [[0.1, 0.2]]]
+        d_small = pymuvr.square_distance_matrix(observations, self.cos, 1e-4)
+        d_zero = pymuvr.square_distance_matrix(observations, self.cos, 0)
+        np.testing.assert_allclose(d_small, d_zero)
+
+    def test_zero_tau(self):
+        observations = [[[0.1, 0.2, 0.3]],
+                        [[0.1, 0.2, 0.3]],
+                        [[0.1, 0.2, 0.4]],
+                        [[0.1, 0.2]]]
+        target_d = np.array([[0, 0, np.sqrt(2), 1],
+                             [0, 0, np.sqrt(2), 1],
+                             [np.sqrt(2), np.sqrt(2), 0, 1],
+                             [1, 1, 1, 0]])
+        d = pymuvr.distance_matrix(observations, observations, 0, 0)
+        np.testing.assert_array_equal(d, target_d)
 
     def test_large_tau_limit(self):
         observations = [[[1,2]], [[1,2]], [[1]]]
         d = pymuvr.square_distance_matrix(observations, self.cos, 1e20)
         np.testing.assert_allclose(d, np.array([[0,0,1],[0,0,1],[1,1,0]]))
         
-
 class TestRandomTrains(unittest.TestCase):
     def setUp(self):
-        n_observations = 10
-        n_cells = 20
-        mean_isi = 0.03
-        max_duration = 2
+        self.n_observations = 10
+        self.n_cells = 20
+        self.mean_isi = 0.03
+        self.max_duration = 2
         self.cos = np.linspace(0, 1, 3)
-        self.tau = np.linspace(0.001, 0.018, 3)
-        self.observations = [[simple_train(mean_isi, max_duration) for c in range(n_cells)] for o in range(n_observations)]
+        self.tau = np.linspace(0, 0.018, 3)
+        self.observations = [[simple_train(self.mean_isi, self.max_duration) for c in range(self.n_cells)] for o in range(self.n_observations)]
         # observation 1 is identical to observation 0 for all the cells.
         self.observations[0] = self.observations[1][:]
 
@@ -119,11 +133,11 @@ class TestRandomTrains(unittest.TestCase):
 class TestCompareWithSpykeutils(unittest.TestCase):
     def setUp(self):
         self.n_observations = 10
-        self.n_cells = 20
+        self.n_cells = 5
         self.rate = 30
-        self.tstop = 2
+        self.tstop = 1
         self.cos = np.linspace(0, 1, 5)
-        self.tau = np.linspace(0.006, 0.018, 3)
+        self.tau = np.linspace(0.0001, 0.018, 3)
         self.sutils_units = {}
         self.pymuvr_observations = []
         for unit in range(self.n_cells):
