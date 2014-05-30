@@ -4,8 +4,21 @@
 #include <vector>
 #include <iostream>
 
+/* Check if we're compiling with Visual Studio */
+#ifdef _MSC_VER
+#include <float.h>
+#endif
+
 #include "numpy/arrayobject.h"
 #include "van_rossum_multiunit.hpp"
+
+/* Visual Studio does not have isfinite; use _finite() instead */
+#ifdef _MSC_VER
+bool isfinite(long double x)
+{
+    return _finite(x);
+}
+#endif
 
 using namespace std;
 
