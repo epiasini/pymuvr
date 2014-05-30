@@ -31,9 +31,31 @@ static struct module_state _state;
 #endif
 
 /*==== docstrings ====*/
-const char * distance_matrix_docstring = "distance_matrix(observations1, observations2, cos, tau)\n\nReturn the *bipartite* (rectangular) dissimilarity matrix between the observations in the first and the second list.\n\n:param list observations1,observations2: Two lists of multi-unit spike trains to compare. Each *observations* parameter must be a thrice-nested list of spike times, with `observations[i][j][k]` representing the time of the kth spike of the jth cell of the ith observation.\n:param float cos: mixing parameter controlling the interpolation between *labelled-line* mode (cos=0) and *summed-population* mode (cos=1). It corresponds to the cosine of the angle between the vectors used for the euclidean embedding of the multiunit spike trains.\n:param float tau: time scale for the exponential kernel, controlling the interpolation between pure *coincidence detection* (tau=0) and *spike count* mode (very large tau). Note that setting tau=0 is always allowed, but there is a range (0, epsilon) of forbidden values that tau is not allowed to assume. The upper bound of this range is proportional to the absolute value of the largest spike time in *observations*, with the proportionality constant being system-dependent. As a rule of thumb tau and the spike times should be within 4 orders of magnitude of each other; for example, if the largest spike time is 10s a value of tau>1ms will be expected. An exception will be raised if tau falls in the forbidden range.\n:return: A len(observations1) x len(observations2) numpy array containing the distance between each pair of observations that can be formed by taking one observation from *observations1* and one from *observations2*.\n:rtype: *numpy.ndarray*\n:raises: *ValueError* if *tau* falls in the forbidden interval.";
+const char * distance_matrix_docstring = "distance_matrix(observations1, observations2, cos, tau)\n\n\
+Return the *bipartite* (rectangular) dissimilarity matrix between the observations in the first and the second list.\n\n\
+\
+\
+:param list observations1,observations2: Two lists of multi-unit spike trains to compare. Each *observations* parameter must be a thrice-nested list of spike times, with `observations[i][j][k]` representing the time of the kth spike of the jth cell of the ith observation.\n\
+:param float cos: mixing parameter controlling the interpolation between *labelled-line* mode (cos=0) and *summed-population* mode (cos=1). It corresponds to the cosine of the angle between the vectors used for the euclidean embedding of the multiunit spike trains.\n\
+:param float tau: time scale for the exponential kernel, controlling the interpolation between pure *coincidence detection* (tau=0) and *spike count* mode (very large tau). Note that setting tau=0 is always allowed, but there is a range (0, epsilon) of forbidden values that tau is not allowed to assume. The upper bound of this range is proportional to the absolute value of the largest spike time in *observations*, with the proportionality constant being system-dependent. As a rule of thumb tau and the spike times should be within 4 orders of magnitude of each other; for example, if the largest spike time is 10s a value of tau>1ms will be expected. An exception will be raised if tau falls in the forbidden range.\n\
+\
+:return: A len(observations1) x len(observations2) numpy array containing the distance between each pair of observations that can be formed by taking one observation from *observations1* and one from *observations2*.\n\
+:rtype: *numpy.ndarray*\n\
+:raises IndexError: if the number of cells in the observations in *observations1* is differnt from that in *observations2*.\n\
+:raises OverflowError: if *tau* falls in the forbidden interval.";
 
-const char * square_distance_matrix_docstring = "square_distance_matrix(observations, cos, tau)\n\nReturn the *all-to-all* (square) dissimilarity matrix for the given list of observations.\n\n:param list observations: A list of multi-unit spike trains to compare. \n:param float cos: mixing parameter controlling the interpolation between *labelled-line* mode (cos=0) and *summed-population* mode (cos=1).\n:param float tau: time scale for the exponential kernel, controlling the interpolation between pure *coincidence detection* (tau=0) and *spike count* mode (very large tau).\n:return: A len(observations) x len(observations) numpy array containing the distance between all possible pairs of observations.\n:rtype: *numpy.ndarray*\n:raises: *ValueError* if *tau* falls in the forbidden interval.\nEffectively equivalent to *distance_matrix(observations, observations, cos, tau)*, but optimised for speed. See the *distance_matrix* description for details.\n";
+const char * square_distance_matrix_docstring = "square_distance_matrix(observations, cos, tau)\n\n\
+Return the *all-to-all* (square) dissimilarity matrix for the given list of observations.\n\n\
+\
+:param list observations: A list of multi-unit spike trains to compare.\n\
+:param float cos: mixing parameter controlling the interpolation between *labelled-line* mode (cos=0) and *summed-population* mode (cos=1).\n\
+:param float tau: time scale for the exponential kernel, controlling the interpolation between pure *coincidence detection* (tau=0) and *spike count* mode (very large tau).\n\
+\
+:return: A len(observations) x len(observations) numpy array containing the distance between all possible pairs of observations.\n\
+:rtype: *numpy.ndarray*\n\
+:raises: **OverflowError** - if *tau* falls in the forbidden interval.\n\
+\
+Effectively equivalent to *distance_matrix(observations, observations, cos, tau)*, but optimised for speed. See the *distance_matrix* description for details.\n";
 
 /*==== method table ====*/
 static PyMethodDef bindings_methods[] = {
@@ -130,7 +152,7 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
   big_m = PyList_Size(observations2);
   big_p = PyList_Size(PyList_GetItem(observations1, (Py_ssize_t)0));
   if (PyList_Size(PyList_GetItem(observations2, (Py_ssize_t)0)) != big_p){
-    PyErr_SetString(PyExc_RuntimeError, "pymuvr: the observations in both lists must have the same number of cells.");
+    PyErr_SetString(PyExc_IndexError, "the observations in both lists must have the same number of cells.");
     return NULL;
   }
   vector<vector<vector<double> > > trains1(big_n,vector<vector<double> >(big_p));
@@ -163,7 +185,7 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
   py_d_matrix = PyArray_SimpleNew(2, dims, NPY_DOUBLE);
   descr = PyArray_DescrFromType(NPY_DOUBLE);
   if (PyArray_AsCArray (&py_d_matrix, &c_d_matrix, dims, 2, descr) == -1){
-    PyErr_SetString(PyExc_RuntimeError, "pymuvr: something went wrong while allocating the dissimilarity matrix.");
+    PyErr_SetString(PyExc_RuntimeError, "something went wrong while allocating the dissimilarity matrix.");
     goto fail;
   }
   /* Perform the core distance calculations */
@@ -171,7 +193,7 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
     d_exp_markage_rect(c_d_matrix, trains1, trains2, tau, cos);
   }
   catch (char const* e){
-    PyErr_SetString(PyExc_RuntimeError, e);
+    PyErr_SetString(PyExc_OverflowError, e);
     goto fail;
   }
 
@@ -237,7 +259,7 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
   py_d_matrix = PyArray_SimpleNew(2, dims, NPY_DOUBLE);
   descr = PyArray_DescrFromType(NPY_DOUBLE);
   if (PyArray_AsCArray (&py_d_matrix, &c_d_matrix, dims, 2, descr) == -1){
-    PyErr_SetString(PyExc_RuntimeError, "pymuvr: something went wrong while allocating the dissimilarity matrix.");
+    PyErr_SetString(PyExc_RuntimeError, "something went wrong while allocating the dissimilarity matrix.");
     goto fail;
   }
 
@@ -246,7 +268,7 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
   d_exp_markage(c_d_matrix, trains, tau, cos);
   }
   catch (char const* e){
-    PyErr_SetString(PyExc_RuntimeError, e);
+    PyErr_SetString(PyExc_OverflowError, e);
     goto fail;
   }
   /*
