@@ -14,13 +14,13 @@ pymuvr - fast multi-unit Van Rossum spike train metric
 
 .. _introduction:
 
-Multi-unit Van Rossum spike train metric. This is a kernel-based
-implementation with markage vector and precomputed exponential factor,
-as described in Houghton and Kreuz, 2012, *On the efficient
-calculation of Van Rossum distances*. This package started out as a
-Python wrapping of the original C++ implementation given by the
-authors of the paper, and evolved from there with bugfixes and
-improvements.
+A Python package for the fast calculation of Multi-unit Van Rossum
+neural spike train metrics, with the kernel-based algorithm described
+in Houghton and Kreuz, *On the efficient calculation of Van Rossum
+distances* (Network: Computation in Neural Systems, 2012, 23,
+48-58). This package started out as a Python wrapping of the original
+C++ implementation given by the authors of the paper, and evolved from
+there with bugfixes and improvements.
 
 Contents
 ========
@@ -32,4 +32,4 @@ Contents
    usage
    api
    license
-
+   acknowledgements

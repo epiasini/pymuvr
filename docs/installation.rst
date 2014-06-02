@@ -4,7 +4,7 @@ Installation
 Requirements
 ------------
 
-- Python 2.7 or 3.x.
+- CPython 2.7 or 3.x.
 - NumPy>=1.7.
 - C++ development tools and Standard Library (package `build-essential` on Debian).
 - Python development tools (package `python-dev` on Debian).
