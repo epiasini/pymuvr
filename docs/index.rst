@@ -29,6 +29,7 @@ Contents
    :maxdepth: 2
       
    installation
+   theory
    usage
    api
    license

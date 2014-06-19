@@ -1,0 +1,305 @@
+% This document is meant to be converted to ReST with pandoc (pandoc
+% -o theory.rst theory.tex), and fed to Sphinx with all the rest of
+% the documentation. MathJax is needed for proper HTML rendering.
+\documentclass[11pt,a4paper]{article}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[sc]{mathpazo} % palatino + apropriate math font. needs to
+                          % be specified before fontenc
+\linespread{1.05} % Palatino needs more leading (space between lines)
+\usepackage[T1]{fontenc}
+\usepackage[square]{natbib}
+\usepackage{amsmath}
+
+% definitions borrowed from the commath package (simplified for
+% MathJax compatibility)
+%---------------------------------------
+\newcommand{\dif}{\textrm{d }\!}
+\newcommand{\norm}[1]{\left\Vert #1 \right\Vert}
+\newcommand{\abs}[1]{\left\vert #1 \right\vert}
+%---------------------------------------
+
+\newcommand{\bra}[1]{\langle #1|}
+\newcommand{\ket}[1]{|#1\rangle}
+\newcommand{\braket}[2]{\langle #1|#2 \rangle}
+\newcommand{\cU}{\mathcal{U}}
+\newcommand{\cV}{\mathcal{V}}
+\newcommand{\bu}{\boldsymbol{u}}
+\newcommand{\bv}{\boldsymbol{v}}
+\newcommand{\mkg}{\boldsymbol{m}}
+\newcommand{\Nmax}[2]{\tilde{N}\left( #1, #2\right)}
+
+\title{A simple formalism for kernel-based multiunit spike train metrics}
+\author{Eugenio Piasini}
+
+\begin{document}
+\maketitle
+\section{Mathematical methods} % this needs to repeat the title of the
+                               % document for Sphinx compatibility
+We define a compact formalism for multiunit spike-train metrics by
+opportunely characterising the space of multiunit feature vectors as a
+tensor product. Previous results from Houghton and Kreuz (2012,
+\emph{On the efficient calculation of van Rossum distances}. Network:
+Computation in Neural Systems, 2012, 23, 48-58) on a clever formula
+for multiunit Van Rossum metrics are then re-derived within this
+framework, also fixing some errors in the original calculations.
+\subsection{A compact formalism for kernel-based multiunit spike train
+  metrics}
+\noindent Consider a network with $C$ cells. Let
+\begin{equation*}
+\cU = \left\{ \bu^1, \bu^2, \ldots, \bu^C \right \}
+\end{equation*}
+be an \emph{observation of network activity}, where
+\begin{equation*}
+\bu^i = \left\{ u_1^i, u_2^i, \ldots, u_{N_{\bu^i}}^i \right \}
+\end{equation*}
+is the (ordered) set of times of the spikes emitted by cell $i$. Let
+$\cV = \left\{\bv^1, \bv^2, \ldots, \bv^C\right\}$ be another
+observation, different in general from $\cU$.
+
+To compute a kernel based multiunit distance between $\cU$ and $\cV$,
+we map them to the tensor product space $\mathcal{S} \doteq
+\mathbb{R}^C\bigotimes L_2(\mathbb{R}\rightarrow\mathbb{R})$ by defining
+\begin{equation*}
+\ket{\cU} = \sum_{i=1}^C \ket{i} \otimes \ket{\bu^i}
+\end{equation*}
+where we consider $\mathbb{R}^C$ and $L_2(\mathbb{R}\rightarrow\mathbb{R})$ to
+be equipped with the usual euclidean distances, consequently inducing
+an euclidean metric structure on $\mathcal{S}$ too.
+
+Conceptually, the set of vectors $\left\{ \ket{i} \right\}_{i=1}^C
+\subset \mathbb{R}^C$ represents the different cells, while each
+$\ket{\bu^i} \in L_2(\mathbb{R}\rightarrow\mathbb{R})$ represents the
+convolution of a spike train of cell $i$ with a real-valued
+feature function $\phi: \mathbb{R}\rightarrow\mathbb{R}$,
+\begin{equation*}
+\braket{t}{\bu} = \sum_{n=1}^{N_{\bu}}\phi(t-u_n)
+\end{equation*}
+
+In practice, we will never use the feature functions directly, but we
+will be only interested in the inner products of the $\ket{i}$ and
+$\ket{\bu}$ vectors. We call
+$c_{ij}\doteq\braket{i}{j}=\braket{i}{j}_{\mathbb{R}^C}=c_{ji}$ the
+\emph{multiunit mixing coefficient} for cells $i$ and $j$, and
+$\braket{\bu}{\bv}=\braket{\bu}{\bv}_{L_2}$ the \emph{single-unit
+  inner product},
+\begin{equation}
+  \label{eq:singleunit_intprod}
+  \begin{split}
+    \braket{\bu}{\bv} & = \braket{\left\{ u_1, u_2, \ldots,
+        u_{N}\right\}}{\left\{ v_1, v_2, \ldots, v_{M}\right\}} = \\
+    &= \int\dif t \braket{\bu}{t}\braket{t}{\bv} = \int\dif t
+    \sum_{n=1}^N\sum_{m=1}^M\phi\left(t-u_n\right)\phi\left(t-v_m\right)\\
+    &\doteq \sum_{n=1}^N\sum_{m=1}^M \mathcal{K}(u_n,v_m)
+  \end{split}
+\end{equation}
+where $\mathcal{K}(t_1,t_2)\doteq\int\dif t
+\left[\phi\left(t-t_1\right)\phi\left(t-t_2\right)\right]$ is the
+\emph{single-unit metric kernel}, and where we have used the fact that
+the feature function $\phi$ is real-valued. It follows immediately
+from the definition above that $\braket{\bu}{\bv}=\braket{\bv}{\bu}$.
+
+Note that, given a cell pair $(i,j)$ or a spike train pair
+$(\bu,\bv)$, $c_{ij}$ does not depend on spike times and
+$\braket{\bu}{\bv}$ does not depend on cell labeling. 
+
+With this notation, we can define the \emph{multi-unit spike train
+  distance} as 
+\begin{equation}
+  \label{eq:distance_as_intprod}
+  \norm{\ket{\cU} - \ket{\cV}}^2 = \braket{\cU}{\cU} + \braket{\cV}{\cV}
+- 2 \braket{\cU}{\cV}
+\end{equation}
+where the \emph{multi-unit spike train inner product}
+$\braket{\cV}{\cU}$ between $\cU$ and $\cV$ is just the natural
+bilinear operation induced on $\mathcal{S}$ by the tensor product
+structure:
+\begin{equation}
+  \label{eq:multiunit_intprod}
+  \begin{split}
+    \braket{\cV}{\cU} &= \sum_{i,j=1}^C
+    \braket{i}{j}\braket{\bv^i}{\bu^j}
+    = \sum_{i,j=1}^C c_{ij}\braket{\bv^i}{\bu^i}\\
+    &= \sum_{i=1}^C\left[ c_{ii}
+      \braket{\bv^i}{\bu^i} + c_{ij}
+      \left(\sum_{j<i}\braket{\bv^i}{\bu^j} +
+        \sum_{j>i}\braket{\bv^i}{\bu^j} \right) \right]
+  \end{split}
+\end{equation}
+But $c_{ij}=c_{ji}$ and $\braket{\bv}{\bu}=\braket{\bu}{\bv}$, so
+\begin{equation*}
+  \begin{split}
+    \sum_{i=1}^C\sum_{j<i}c_{ij}\braket{\bv^i}{\bu^j} &=
+    \sum_{j=1}^C\sum_{i<j}c_{ji}\braket{\bv^j}{\bu^i} = 
+    \sum_{i=1}^C\sum_{j>i}c_{ji}\braket{\bv^j}{\bu^i} =
+    \sum_{i=1}^C\sum_{j>i}c_{ij}\braket{\bv^j}{\bu^i}\\
+    &=\sum_{i=1}^C\sum_{j>i}c_{ij}\braket{\bu^i}{\bv^j}
+  \end{split}
+\end{equation*}
+and
+\begin{equation}
+    \label{eq:multiprod_j_ge_i}
+    \braket{\cV}{\cU} = \sum_{i=1}^C\left[ c_{ii}
+      \braket{\bv^i}{\bu^i} + c_{ij}
+      \sum_{j>i}\left(\braket{\bv^i}{\bu^j} +
+        \braket{\bu^i}{\bv^j} \right) \right]
+\end{equation}
+
+Now, normally we are interested in the particular case where $c_{ij}$ is
+the same for all pair of distinct cells:
+\begin{equation*}
+c_{ij} = \begin{cases}
+  1 & \textrm{if } i=j\\
+  c & \textrm{if } i\neq j
+\end{cases}
+\end{equation*}
+and under this assumption we can write
+\begin{equation}
+  \label{eq:multiprod_constant_c}
+  \braket{\cV}{\cU} = \sum_{i=1}^C\left[\braket{\bv^i}{\bu^i} + c\sum_{j>i}\left(\braket{\bv^i}{\bu^j} + \braket{\bu^i}{\bv^j} \right) \right]
+\end{equation}
+and
+\begin{equation}
+  \begin{split}
+    \norm{\ket{\cU} - \ket{\cV}}^2 =
+    \sum_{i=1}^C\Bigg\{&\braket{\bu^i}{\bu^i} +
+    c\sum_{j>i}\left(\braket{\bu^i}{\bu^j} + \braket{\bu^i}{\bu^j}
+    \right) +\\
+    +&\braket{\bv^i}{\bv^i} + c\sum_{j>i}\left(\braket{\bv^i}{\bv^j} +
+      \braket{\bv^i}{\bv^j} \right) + \\
+    -2&\left[\braket{\bv^i}{\bu^i} +
+      c\sum_{j>i}\left(\braket{\bv^i}{\bu^j} + \braket{\bu^i}{\bv^j}
+      \right)\right] \Bigg\}
+  \end{split}
+\end{equation}  
+Rearranging the terms 
+\begin{multline} 
+  \label{eq:multidist_constant_c}
+  \norm{\ket{\cU} - \ket{\cV}}^2 =
+  \sum_{i=1}^C\Bigg[\braket{\bu^i}{\bu^i} + \braket{\bv^i}{\bv^i}
+  - 2 \braket{\bv^i}{\bu^i} + \\
+  + 2c\sum_{j>i}\left(\braket{\bu^i}{\bu^j} + \braket{\bv^i}{\bv^j}
+    -\braket{\bv^i}{\bu^j} - \braket{\bv^j}{\bu^i}\right)\Bigg]
+\end{multline}
+  
+\subsection{Van Rossum-like metrics} In Van Rossum-like
+metrics, the feature function and the single-unit kernel are, for
+$\tau\neq 0$,
+\begin{gather*}
+\phi^{\textrm{VR}}_{\tau}(t) = \sqrt{\frac{2}{\tau}}\cdot e^{-t/\tau}\theta(t) \\
+\mathcal{K}^{\textrm{VR}}_{\tau}(t_1,t_2) = \begin{cases}
+  1 & \textrm{if } t_1=t_2\\
+  e^{-\abs{t_1-t_2}/\tau} & \textrm{if } t_1\neq t_2
+\end{cases}
+\end{gather*}
+where $\theta$ is the Heaviside step function (with $\theta(0)=1$),
+and we have chosen to normalise $\phi^{\textrm{VR}}_{\tau}$ so that
+\begin{equation*}
+\norm{\phi^{\textrm{VR}}_{\tau}}_2 = \sqrt{\int\dif t \left[\phi^{\textrm{VR}}_{\tau}(t)\right]^2} = 1 \quad.
+\end{equation*}
+
+In the $\tau\rightarrow 0$ limit,
+\begin{gather*}
+\phi^{\textrm{VR}}_{0}(t) = \delta(t)\\
+\mathcal{K}^{\textrm{VR}}_{0}(t_1,t_2) = \begin{cases}
+  1 & \textrm{if } t_1=t_2\\
+  0 & \textrm{if } t_1\neq t_2
+\end{cases}
+\end{gather*}
+In particular, the single-unit inner product now becomes
+\begin{equation*}
+  \braket{\bu}{\bv} = \sum_{n=1}^N\sum_{m=1}^M
+  \mathcal{K}^{\textrm{VR}}(u_n,v_m) = \sum_{n=1}^N\sum_{m=1}^M
+  e^{-\abs{u_n-v_m}/\tau}
+\end{equation*}
+
+\subsubsection{Markage formulas}
+For a spike train $\bu$ of length $N$ and a time $t$ we define
+the index $\Nmax{\bu}{t}$
+\begin{equation*}
+  \Nmax{\bu}{t} \doteq \max\{n | u_n < t\}
+\end{equation*}
+which we can use to re-write $\braket{\bu}{\bu}$ without the absolute
+values:
+\begin{equation*}
+  \begin{split}
+    \braket{\bu}{\bu}&= \sum_{n=1}^N \left(
+      \sum_{m|v_m<u_n}e^{-(u_n-v_m)/\tau} +
+      \sum_{m|v_m>u_n}e^{-(v_m-u_n)/\tau} +
+      \sum_{m=1}^M\delta\left(u_n,v_m\right)
+    \right)\\
+    &= \sum_{n=1}^N \left( \sum_{m|v_m<u_n}e^{-(u_n-v_m)/\tau} +
+      \sum_{m|u_m<v_n}e^{-(v_n-u_m)/\tau} +
+      \sum_{m=1}^M\delta\left(u_n,v_m\right) \right)\\
+    &= \sum_{n=1}^N \left[
+      \sum_{m=1}^{\Nmax{\bv}{u_n}}e^{-(u_n-v_m)/\tau} +
+      \sum_{m=1}^{\Nmax{\bu}{v_n}}e^{-(v_n-u_m)/\tau} +
+      \delta\left(u_n,v_{\Nmax{\bv}{u_n}+1}\right)
+    \right]\\
+    &= \sum_{n=1}^N \Bigg[ e^{-(u_n-v_{\Nmax{\bv}{u_n}})/\tau}
+    \sum_{m=1}^{\Nmax{\bv}{u_n}}e^{-(v_{\Nmax{\bv}{u_n}}-v_m)/\tau} +
+    \\
+    &\phantom{ = \sum_{n=1}^N } + e^{-(v_n-u_{\Nmax{\bu}{v_n}})/\tau}
+    \sum_{m=1}^{\Nmax{\bu}{v_n}}e^{-(u_{\Nmax{\bu}{v_n}}-u_m)/\tau}
+    + \\
+    &\phantom{ = \sum_{n=1}^N } + \delta\left(u_n,v_{\Nmax{\bv}{u_n}+1}\right) \Bigg]\\
+  \end{split}
+\end{equation*}
+For a spike train $\bu$ of length $N$, we also define the the
+\emph{markage vector} $\mkg$, with the same length as $\bu$, through
+the following recursive assignment:
+\begin{align}
+  m_1(\bu) &\doteq 0 \\
+  m_n(\bu) &\doteq \left(m_{n-1} + 1\right) e^{-(u_n - u_{n-1})/\tau}
+  \quad \forall n \in \{2,\ldots,N\}\label{eq:markage_definition}
+\end{align}
+It is easy to see that
+\begin{equation}
+  \begin{split}
+    m_n(\bu) &= \sum_{k=1}^{n-1}e^{-(u_n - u_k)/\tau} =
+    \left(\sum_{k=1}^{n}e^{-(u_n - u_k)/\tau}\right) - e^{-(u_n - u_n)/\tau}\\
+    &= \sum_{k=1}^{n}e^{-(u_n - u_k)/\tau} - 1
+  \end{split}
+\end{equation}
+and in particular
+\begin{equation}
+  \label{eq:markage_sum}
+  \sum_{n=1}^{\Nmax{\bu}{t}}e^{-(u_{\Nmax{\bu}{t}}-u_n)/\tau} = 1 + m_{\Nmax{\bu}{t}}(\bu)
+\end{equation}
+With this definition, we get
+\begin{equation}
+  \label{eq:singleunit_intprod_markage}
+  \begin{split}
+    \braket{\bu}{\bv} &= \sum_{n=1}^N \Bigg[
+    e^{-(u_n-v_{\Nmax{\bv}{u_n}})/\tau} \left(1 + m_{\Nmax{\bv}{u_n}}(\bv)\right)
+    + \\
+    &\phantom{= \sum_{n=1}^N} + e^{-(v_n-u_{\Nmax{\bu}{v_n}})/\tau}
+    \left(1 + m_{\Nmax{\bu}{v_n}}(\bu)\right) + \\
+    &\phantom{= \sum_{n=1}^N} + 
+    \delta\left(u_n,v_{\Nmax{\bv}{u_n}+1}\right) \Bigg]
+  \end{split}
+\end{equation}
+Finally, note that because of the definition of the markage vector
+\begin{equation*}
+  e^{-(u_n-u_{\Nmax{\bu}{u_n}})/\tau} \left(1 +
+    m_{\Nmax{\bu}{u_n}}(\bu)\right) = e^{-(u_n-u_{n-1})/\tau}\left(1+m(\bu)\right) = m_{n}(\bu)
+\end{equation*}
+so that in particular
+\begin{equation}
+  \label{eq:singleunit_squarenorm_markage}
+  \begin{split}
+    \braket{\bu}{\bu} &= \sum_{n=1}^N \left(1 + 2m_{n}(\bu)\right)
+  \end{split}
+\end{equation}
+
+A formula for the efficient computation of multiunit Van Rossum spike
+train metrics, used by \texttt{pymuvr}, can then be obtained by
+opportunely substituting these expressions for the single-unit scalar
+products in the definition of the multiunit distance.
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-PDF-mode: t
+%%% TeX-master: t
+%%% End: 

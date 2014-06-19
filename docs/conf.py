@@ -37,6 +37,7 @@ if on_rtd:
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.mathjax',
     'breathe'
 ]
 
@@ -196,6 +197,9 @@ htmlhelp_basename = 'pymuvrdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
+_PREAMBLE = r"""
+\usepackage{amssymb}
+"""
 
 latex_elements = {
 # The paper size ('letterpaper' or 'a4paper').
@@ -205,7 +209,7 @@ latex_elements = {
 #'pointsize': '10pt',
 
 # Additional stuff for the LaTeX preamble.
-#'preamble': '',
+'preamble': _PREAMBLE,
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
