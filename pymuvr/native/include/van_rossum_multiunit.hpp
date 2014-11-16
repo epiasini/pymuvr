@@ -6,8 +6,8 @@
  *  distances. Network: Computation in Neural Systems, 2012, 23,
  *  48-58.
  *
- *  Original implementation by Conor Houghton (2012). Later changes by
- *  Eugenio Piasini (2013, 2014).
+ *  Original implementation of multiunit distance algorithm by Conor
+ *  Houghton (2012). Later work by Eugenio Piasini (2013, 2014).
  *
  */
 #ifndef VAN_ROSSUM_H
@@ -23,19 +23,20 @@ using namespace std;
  * trains.
  *
  * 
- * \param[in] d_matrix The trains.size() x trains.size() matrix where
- * the results will be written.
+ * \param[out] d_matrix The \a trains.size() x \a trains.size() matrix
+ * where the results will be written.
  *
  * \param[in] trains The set of multi unit spike trains.
  *
  * \param[in] tau Time scale for the exponential kernel. There is a
- * limit to how small tau can be compared to the absolute value of the
- * spike times. An exception will be raised if this limit is exceeded;
- * its value is system-dependent, but as a rule of thumb tau and the
- * spike times should be within 4 orders of magnitude of each other.
+ * limit to how small \a tau can be compared to the absolute value of
+ * the spike times. An exception will be raised if this limit is
+ * exceeded; its value is system-dependent, but as a rule of thumb \a
+ * tau and the spike times should be within 4 orders of magnitude of
+ * each other.
  *
- * \param[in] c Cosine of the multi-unit mixing angle. c=0 corresponds
- * to labelled-line code, c=1 to summed-population code.
+ * \param[in] c Cosine of the multi-unit mixing angle. \a c=0 corresponds
+ * to labelled-line code, \a c=1 to summed-population code.
  */
 void d_exp_markage(double **d_matrix,
 		   vector<vector<vector<double> > > & trains,
@@ -48,19 +49,20 @@ void d_exp_markage(double **d_matrix,
  * spike trains (observations).
  *
  * 
- * \param[in] d_matrix The trains1.size() x trains2.size() matrix
- * where the results will be written.
+ * \param[out] d_matrix The \a trains1.size() x \a trains2.size()
+ * matrix where the results will be written.
  *
  * \param[in] trains1,trains2 The sets of multi unit spike trains.
  *
  * \param[in] tau Time scale for the exponential kernel. There is a
- * limit to how small tau can be compared to the absolute value of the
- * spike times. An exception will be raised if this limit is exceeded;
- * its value is system-dependent, but as a rule of thumb tau and the
- * spike times should be within 4 orders of magnitude of each other.
+ * limit to how small \a tau can be compared to the absolute value of
+ * the spike times. An exception will be raised if this limit is
+ * exceeded; its value is system-dependent, but as a rule of thumb \a
+ * tau and the spike times should be within 4 orders of magnitude of
+ * each other.
  *
- * \param[in] c Cosine of the multi-unit mixing angle. c=0 corresponds
- * to labelled-line code, c=1 to summed-population code.
+ * \param[in] c Cosine of the multi-unit mixing angle. \a c=0 corresponds
+ * to labelled-line code, \a c=1 to summed-population code.
  */
 void d_exp_markage_rect(double **d_matrix,
 			vector<vector<vector<double> > > & trains1,
