@@ -77,7 +77,56 @@ class TestTrivialTrains(unittest.TestCase):
         observations = [[[1,2]], [[1,2]], [[1]]]
         d = pymuvr.square_distance_matrix(observations, self.cos, 1e20)
         np.testing.assert_allclose(d, np.array([[0,0,1],[0,0,1],[1,1,0]]))
+
+class TestExceptions(unittest.TestCase):
+    def setUp(self):
+        self.cos = 0.5
+    def test_forbidden_tau(self):
+        observations = [[[0., 100]],
+                        [[1., 3.]]]
+        self.assertRaises(OverflowError,
+                          pymuvr.square_distance_matrix,
+                          observations,
+                          self.cos,
+                          0.00001)
         
+    def test_inconsistent_observations_across_sets(self):
+        observations1 = [[[0.4, 1.1, 1.5]],
+                         [[0.71, 3.6]]]
+        observations2 = [[[0., 1.2, 1.6],
+                          [0.5, 1.]],
+                         [[0.7, 3.],
+                          [0.2, 1., 1.8]]]
+        self.assertRaises(IndexError,
+                          pymuvr.distance_matrix,
+                          observations1,
+                          observations2,
+                          self.cos,
+                          0.1)
+
+    def test_inconsistent_observations_within_set_rectangular(self):
+        observations1 = [[[0., 1.2, 1.6]],
+                         [[0.7, 3.],
+                          [0.2, 1., 1.8]]]
+        observations2 = [[[0.4, 1.1, 1.5]]]
+        self.assertRaises(IndexError,
+                          pymuvr.distance_matrix,
+                          observations1,
+                          observations2,
+                          self.cos,
+                          0.1)
+
+    def test_inconsistent_observations_within_set_square(self):
+        observations = [[[0., 1.2, 1.6]],
+                        [[0.7, 3.],
+                         [0.2, 1., 1.8]]]
+        self.assertRaises(IndexError,
+                          pymuvr.square_distance_matrix,
+                          observations,
+                          self.cos,
+                          0.1)
+
+
 class TestRandomTrains(unittest.TestCase):
     def setUp(self):
         self.n_observations = 10

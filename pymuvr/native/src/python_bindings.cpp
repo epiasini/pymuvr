@@ -3,6 +3,7 @@
 #include "Python.h"
 #include <vector>
 #include <iostream>
+#include <stdexcept>
 
 #include "numpy/arrayobject.h"
 #include "van_rossum_multiunit.hpp"
@@ -140,21 +141,36 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
     return NULL;
   
   /*
-    Build the 3D arrays (observation, cell, spiketime) to be fed to
-    the original metric implementation. There are big_n observations
-    (ie "network activity realisations", or "multi-unit spike trains")
-    in the first set and big_m observations in the second set, and
-    each of them is composed by big_p single-unit spike trains, but
-    each of the single-unit spike train can have a different
-    length. This means the 3D arrays don't have a regular shape.
+    Find out the number of observations and of cells per
+    observation. Check that input observations all have the same
+    number of cells. There are big_n observations (ie "network
+    activity realisations", or "multi-unit spike trains") in the first
+    set and big_m observations in the second set, and each of them
+    must be composed by big_p single-unit spike trains, but each of
+    the single-unit spike train can have a different length. This
+    means the 3D arrays don't have a regular shape.
   */
   big_n = PyList_Size(observations1);
   big_m = PyList_Size(observations2);
   big_p = PyList_Size(PyList_GetItem(observations1, (Py_ssize_t)0));
-  if (PyList_Size(PyList_GetItem(observations2, (Py_ssize_t)0)) != big_p){
-    PyErr_SetString(PyExc_IndexError, "the observations in both lists must have the same number of cells.");
-    return NULL;
+  /* Check that input observations all have the same number of cells */
+  for(Py_ssize_t n=0;n<big_n;++n){
+    if (PyList_Size(PyList_GetItem(observations1, n)) != big_p){
+      PyErr_SetString(PyExc_IndexError, "trying to compare observations with a different number of cells.");
+      return NULL;
+    }
   }
+  for(Py_ssize_t n=0;n<big_m;++n){
+    if (PyList_Size(PyList_GetItem(observations2, n)) != big_p){
+      PyErr_SetString(PyExc_IndexError, "trying to compare observations with a different number of cells.");
+      return NULL;
+    }
+  }
+
+  /*
+    Build the 3D arrays (observation, cell, spiketime) to be fed to
+    the original metric implementation.
+  */
   vector<vector<vector<double> > > trains1(big_n,vector<vector<double> >(big_p));
   vector<vector<vector<double> > > trains2(big_m,vector<vector<double> >(big_p));
   for(Py_ssize_t n=0;n<big_n;++n){
@@ -191,9 +207,11 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
   /* Perform the core distance calculations */
   try{
     d_exp_markage_rect(c_d_matrix, trains1, trains2, tau, cos);
-  }
-  catch (char const* e){
-    PyErr_SetString(PyExc_OverflowError, e);
+  }catch (overflow_error const& e){
+    PyErr_SetString(PyExc_OverflowError, e.what());
+    goto fail;
+  }catch (invalid_argument const& e){
+    PyErr_SetString(PyExc_IndexError, e.what());
     goto fail;
   }
 
@@ -229,16 +247,28 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
 			&observations, &cos, &tau))
     return NULL;
   
-  /*
-    Build the 3D array (observation, cell, spiketime) to be fed to the
-    original metric implementation. There are big_n observations (ie
-    "network activity realisations", or "multi-unit spike trains"),
-    and each of them is composed by big_p single-unit spike trains,
+  /* 
+    Find out the number of observations and of cells per
+    observation. Check that input observations all have the same
+    number of cells. There are big_n observations (ie "network
+    activity realisations", or "multi-unit spike trains"), and each of
+    them must be composed composed by big_p single-unit spike trains,
     but each of the single-unit spike train can have a different
     length. This means the 3D array doesn't have a regular shape.
   */
   big_n = PyList_Size(observations);
   big_p = PyList_Size(PyList_GetItem(observations, (Py_ssize_t)0));
+  for(Py_ssize_t n=0;n<big_n;++n){
+    if (PyList_Size(PyList_GetItem(observations, n)) != big_p){
+      PyErr_SetString(PyExc_IndexError, "trying to compare observations with a different number of cells.");
+      return NULL;
+    }
+  }
+
+  /*
+    Build the 3D array (observation, cell, spiketime) to be fed to the
+    original metric implementation.
+  */
   vector<vector<vector<double> > > trains(big_n,vector<vector<double> >(big_p));
   for(Py_ssize_t n=0;n<big_n;++n){
     PyObject *ob = PyList_GetItem(observations, n);
@@ -266,9 +296,11 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
   /* Perform the core distance calculations */
   try{
   d_exp_markage(c_d_matrix, trains, tau, cos);
-  }
-  catch (char const* e){
-    PyErr_SetString(PyExc_OverflowError, e);
+  }catch (overflow_error const& e){
+    PyErr_SetString(PyExc_OverflowError, e.what());
+    goto fail;
+  }catch (invalid_argument const& e){
+    PyErr_SetString(PyExc_ValueError, e.what());
     goto fail;
   }
   /*

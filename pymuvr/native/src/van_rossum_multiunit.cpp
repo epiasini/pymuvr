@@ -1,4 +1,5 @@
 #include<cstdlib>
+#include<stdexcept>
 #include<vector>
 #include<cmath>
 #include<iostream>
@@ -117,7 +118,7 @@ void d_exp_markage_rect(double **d_matrix,
   unsigned int big_p=trains1.front().size();
 
   if (trains2.front().size() != big_p){
-    throw "d_exp_markage_rect: the observations in both lists must have the same number of cells.";
+    throw invalid_argument("trying to compare two observations with a different number of cells.");
   }
 
 
@@ -237,7 +238,7 @@ double d_single_observation_zero_tau(vector<vector<double> > & obs1,
 
   unsigned int cells = obs1.size();
   if (obs2.size()!=cells)
-    throw "Trying to compare two observations with a different number of cells.";
+    throw invalid_argument("trying to compare two observations with a different number of cells.");
 
   double d_same = 0;
   double d_cross = 0;
@@ -439,7 +440,7 @@ void expage(vector<long double> & e_pos, vector<long double> & e_neg,vector<doub
     exponentials*/
   if (train_size>0 && (e_neg.front()==0 || !isfinite(e_pos.back())))
     {
-      throw "tau is too small compared to the spike times. Please use a larger value for tau, or shorter spike trains.";
+      throw overflow_error("tau is too small compared to the spike times. Please use a larger value for tau, or shorter spike trains.");
     }
 
 }
