@@ -160,8 +160,8 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
       return NULL;
     }
   }
-  for(Py_ssize_t n=0;n<big_m;++n){
-    if (PyList_Size(PyList_GetItem(observations2, n)) != big_p){
+  for(Py_ssize_t m=0;m<big_m;++m){
+    if (PyList_Size(PyList_GetItem(observations2, m)) != big_p){
       PyErr_SetString(PyExc_IndexError, "trying to compare observations with a different number of cells.");
       return NULL;
     }
@@ -182,12 +182,12 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
       }
     }
   }
-  for(Py_ssize_t n=0;n<big_m;++n){
-    PyObject *ob = PyList_GetItem(observations2, n);
+  for(Py_ssize_t m=0;m<big_m;++m){
+    PyObject *ob = PyList_GetItem(observations2, m);
     for(Py_ssize_t p=0;p<big_p;++p){
       PyObject *cell = PyList_GetItem(ob, p);
       for(Py_ssize_t s=0;s<PyList_Size(cell);++s){
-	trains2.at(n).at(p).push_back(PyFloat_AsDouble(PyList_GetItem(cell, s)));
+	trains2.at(m).at(p).push_back(PyFloat_AsDouble(PyList_GetItem(cell, s)));
       }
     }
   }
