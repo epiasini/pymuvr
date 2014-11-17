@@ -124,6 +124,13 @@ int single_unit_scalar_product_zero_tau(vector<double> & train_a,
 
 double big_r_with_exp_markage(vector<double> & fs);
 
+/*!
+ * "Single-unit inner product" between train_a and train_b.
+ * 
+ * Needs the markage vectors f, e_pos and e_neg to be computed
+ * separately.
+ *
+ */
 double big_r_with_exp_markage(vector<double> & train_a,
 			      vector<double> & f_a,
 			      vector<long double> & e_pos_a,
