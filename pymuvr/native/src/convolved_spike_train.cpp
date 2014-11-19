@@ -17,7 +17,10 @@ bool isfinite(long double x)
 }
 #endif
 
-using namespace std;
+using std::exp; using std::isfinite; // from cmath
+using std::vector; // from vector
+using std::accumulate; // from numeric
+using std::overflow_error; // from stdexcept
 
 ConvolvedSpikeTrain::ConvolvedSpikeTrain(): tau_(), spikes_(), size_(), exp_pos_(), exp_neg_(), markage_(){}
     
