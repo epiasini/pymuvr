@@ -10,13 +10,15 @@
  *
  */
 class ConvolvedSpikeTrain {
-  unsigned int size_;
-  double tau_;
-  double square_norm_;
+  /* Data assigned upon instantiation */
   std::vector<double> spikes_;
+  double tau_;
+  /* Data that gets computed internally */
+  unsigned int size_;
   std::vector<long double> exp_pos_;
   std::vector<long double> exp_neg_;
   std::vector<double> markage_;
+  double square_norm_;
   
   void UpdateExponentialVectors(); /*!< Compute and store exponential vectors */
   void UpdateMarkageVector(); /*!< Compute and store markage vector */

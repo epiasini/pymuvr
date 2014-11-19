@@ -23,9 +23,9 @@ using std::vector; // from vector
 using std::accumulate; // from numeric
 using std::overflow_error; // from stdexcept
 
-ConvolvedSpikeTrain::ConvolvedSpikeTrain(): tau_(), spikes_(), size_(), exp_pos_(), exp_neg_(), markage_(){}
+ConvolvedSpikeTrain::ConvolvedSpikeTrain(): spikes_(), tau_(), size_(), exp_pos_(), exp_neg_(), markage_(), square_norm_(){}
     
-ConvolvedSpikeTrain::ConvolvedSpikeTrain(vector<double> spikes, double tau) : tau_(tau), spikes_(spikes), size_(spikes.size()), exp_pos_(size_), exp_neg_(size_), markage_(size_){
+ConvolvedSpikeTrain::ConvolvedSpikeTrain(vector<double> spikes, double tau) : spikes_(spikes), tau_(tau), size_(spikes.size()){
   UpdateConvolution(tau);
 }
 
