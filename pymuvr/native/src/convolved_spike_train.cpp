@@ -2,6 +2,7 @@
 
 #include<stdexcept>
 #include<vector>
+#include<numeric>
 #include<cmath>
 
 /* Check if we're compiling with Visual Studio */
@@ -32,6 +33,7 @@ void ConvolvedSpikeTrain::UpdateConvolution(double tau){
   tau_ = tau;
   UpdateExponentialVectors();
   UpdateMarkageVector();
+  UpdateSquareNorm();
 }
 
 void ConvolvedSpikeTrain::UpdateExponentialVectors(){
@@ -56,4 +58,8 @@ void ConvolvedSpikeTrain::UpdateMarkageVector(){
       markage_[i] = (1 + markage_[i-1]) * exp_pos_[i-1] * exp_neg_[i];
     }
   }
+}
+
+void ConvolvedSpikeTrain::UpdateSquareNorm(){
+  square_norm_ = size_ + 2 * accumulate(markage_.begin(), markage_.end(), 0.0);
 }

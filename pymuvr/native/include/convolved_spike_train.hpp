@@ -12,13 +12,15 @@
 class ConvolvedSpikeTrain {
   unsigned int size_;
   double tau_;
+  double square_norm_;
   std::vector<double> spikes_;
   std::vector<long double> exp_pos_;
   std::vector<long double> exp_neg_;
   std::vector<double> markage_;
   
-  void UpdateExponentialVectors(); /*!< Compute exponential vectors */
-  void UpdateMarkageVector(); /*!< Compute markage vector */
+  void UpdateExponentialVectors(); /*!< Compute and store exponential vectors */
+  void UpdateMarkageVector(); /*!< Compute and store markage vector */
+  void UpdateSquareNorm(); /*< Compute and store square norm of spike train */
 public:
   /*!
    * Default constructor.
@@ -43,6 +45,7 @@ public:
   /* Attribute getters */
   unsigned int size() const { return size_; }
   double tau() const { return tau_; }
+  double square_norm() const {return square_norm_; }
   std::vector<double> spikes() const { return spikes_; }
   std::vector<long double> exp_pos() const { return exp_pos_; }
   std::vector<long double> exp_neg() const { return exp_neg_; }
