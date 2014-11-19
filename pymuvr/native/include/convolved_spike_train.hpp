@@ -4,7 +4,7 @@
 #include<vector>
 
 /*!
- * A class representing a multiunit spike train for which several
+ * A class representing a single-unit spike train for which several
  * helper vectors relating to a Van Rossum-like exponential
  * convolution have been calculated.
  *
