@@ -11,9 +11,9 @@
 using namespace std;
 
 void print_train(ConvolvedSpikeTrain t){
-  cout << t.tau() << ' ' << t.size() << ' ' << t.square_norm() << endl;
-  for (unsigned int i=0; i<t.size(); ++i){
-    cout << t.spikes()[i] << ' ' << t.exp_pos()[i] << ' ' << t.exp_neg()[i] << ' ' << t.markage()[i] << endl;
+  cout << t.tau << ' ' << t.size << ' ' << t.square_norm << endl;
+  for (unsigned int i=0; i<t.size; ++i){
+    cout << t.spikes[i] << ' ' << t.exp_pos[i] << ' ' << t.exp_neg[i] << ' ' << t.markage[i] << endl;
   }
   cout << endl;
 }
@@ -32,6 +32,8 @@ int main(){
   
   ctrain.UpdateConvolution(0.3);
   print_train(ctrain);
+
+  ctrain.UpdateConvolution(0.0);
 
   vector<double> spikes2;
   ConvolvedSpikeTrain ctrain2 = ConvolvedSpikeTrain(vector<double>(), 0);
