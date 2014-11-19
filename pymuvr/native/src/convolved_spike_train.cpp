@@ -1,10 +1,8 @@
 #include "convolved_spike_train.hpp"
 
-#include<cstdlib>
 #include<stdexcept>
 #include<vector>
 #include<cmath>
-#include<iostream>
 
 /* Check if we're compiling with Visual Studio */
 #ifdef _MSC_VER

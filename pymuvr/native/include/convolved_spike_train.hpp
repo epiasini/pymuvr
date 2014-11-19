@@ -1,10 +1,7 @@
 #ifndef __CONVOLVED_SPIKE_TRAIN_HPP_INCLUDED__
 #define __CONVOLVED_SPIKE_TRAIN_HPP_INCLUDED__
 
-#include<cstdlib>
 #include<vector>
-
-using namespace std;
 
 /*!
  * A class representing a multiunit spike train for which several
@@ -15,10 +12,10 @@ using namespace std;
 class ConvolvedSpikeTrain {
   unsigned int size_;
   double tau_;
-  vector<double> spikes_;
-  vector<long double> exp_pos_;
-  vector<long double> exp_neg_;
-  vector<double> markage_;
+  std::vector<double> spikes_;
+  std::vector<long double> exp_pos_;
+  std::vector<long double> exp_neg_;
+  std::vector<double> markage_;
   
   void UpdateExponentialVectors(); /*!< Compute exponential vectors */
   void UpdateMarkageVector(); /*!< Compute markage vector */
@@ -41,15 +38,15 @@ public:
    * of each other.
    *
    */
-  ConvolvedSpikeTrain(vector<double> spikes, double tau);
+  ConvolvedSpikeTrain(std::vector<double> spikes, double tau);
   
   /* Attribute getters */
   unsigned int size() const { return size_; }
   double tau() const { return tau_; }
-  vector<double> spikes() const { return spikes_; }
-  vector<long double> exp_pos() const { return exp_pos_; }
-  vector<long double> exp_neg() const { return exp_neg_; }
-  vector<double> markage() const { return markage_; }
+  std::vector<double> spikes() const { return spikes_; }
+  std::vector<long double> exp_pos() const { return exp_pos_; }
+  std::vector<long double> exp_neg() const { return exp_neg_; }
+  std::vector<double> markage() const { return markage_; }
 
   /*!
    * Update values of helper vectors using a new value for the time
