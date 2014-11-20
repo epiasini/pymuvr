@@ -5,6 +5,7 @@
 
 #include<vector>
 #include<iostream>
+#include<limits>
 
 #include "convolved_spike_train.hpp"
 
@@ -34,6 +35,10 @@ int main(){
   print_train(ctrain);
 
   ctrain.UpdateConvolution(0.0);
+  print_train(ctrain);
+  
+  ctrain.UpdateConvolution(numeric_limits<double>::infinity());
+  print_train(ctrain);
 
   vector<double> spikes2;
   ConvolvedSpikeTrain ctrain2 = ConvolvedSpikeTrain(vector<double>(), 0);

@@ -61,13 +61,13 @@ void ConvolvedSpikeTrain::UpdateMarkageVector(){
 	  /* If tau is zero, we have to work around the Inf * 0
 	   * expression that would result from multiplyting exp_pos
 	   * and exp_neg */
-	  markage[i] = 1 + markage[i-1];
+	  markage[i] = 0;
 	}
       }
   }
 }
 
 void ConvolvedSpikeTrain::UpdateSquareNorm(){
-  /* Note that this is still valid even if tau is zero */
+  /* Note that this is still valid even if tau is zero or infinity */
   square_norm = size + 2 * accumulate(markage.begin(), markage.end(), 0.0);
 }
