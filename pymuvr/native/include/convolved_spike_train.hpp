@@ -1,3 +1,10 @@
+/*!
+ * \file convolved_spike_train.hpp
+ * \author Eugenio Piasini
+ * \date 2014
+ * \copyright GPLv3+
+ */
+
 #ifndef __CONVOLVED_SPIKE_TRAIN_HPP_INCLUDED__
 #define __CONVOLVED_SPIKE_TRAIN_HPP_INCLUDED__
 
@@ -10,20 +17,21 @@
  *
  */
 class ConvolvedSpikeTrain {
-  void UpdateExponentialVectors(); /*!< Compute and store exponential vectors */
-  void UpdateMarkageVector(); /*!< Compute and store markage vector */
-  void UpdateSquareNorm(); /*< Compute and store square norm of spike train */
+  void UpdateExponentialVectors(); /*!< Compute and store exponential vectors. */
+  void UpdateMarkageVector(); /*!< Compute and store markage vector. */
+  void UpdateSquareNorm(); /*< Compute and store square norm of spike train. */
 public:
   /* Data assigned upon instantiation. For ease of access, it's best
    * to keep all data members public. */
-  std::vector<double> spikes;
-  double tau;
+  std::vector<double> spikes; /*!< Vector of spike times */
+  double tau; /*!< Time scale for the exponential kernel. */
+
   /* Data that gets computed internally */
-  unsigned int size;
-  std::vector<long double> exp_pos;
-  std::vector<long double> exp_neg;
-  std::vector<double> markage;
-  double square_norm;
+  unsigned int size; /*!< Number of spikes. */
+  std::vector<long double> exp_pos; /*!< Vector containing the value exp(t/tau) for each spike time. */
+  std::vector<long double> exp_neg; /*!< Vector containing the value exp(-t/tau) for each spike time. */
+  std::vector<double> markage; /*!< Markage vector */
+  double square_norm; /*!< Square norm of the vector. */
   
   /*!
    * Default constructor.

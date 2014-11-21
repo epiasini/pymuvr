@@ -6,9 +6,12 @@
  *  distances. Network: Computation in Neural Systems, 2012, 23,
  *  48-58.
  *
- *  Original implementation of multiunit distance algorithm by Conor
- *  Houghton (2012). Later work by Eugenio Piasini (2013, 2014).
+ *  Credit to Conor Houghton (2012) for the first implementation of
+ *  the algorithm published in the paper above. Later work by Eugenio
+ *  Piasini (2013, 2014).
  *
+ *  \date 2012-2014
+ *  \copyright GPLv3+
  */
 #ifndef VAN_ROSSUM_H
 #define VAN_ROSSUM_H

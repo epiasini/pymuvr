@@ -170,7 +170,7 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
 
   /*
     Build the 2D arrays (observation, cell) of convolved spike trains
-    to be fed to the original metric implementation.
+    to be fed to the distance function.
   */
   vector<vector<ConvolvedSpikeTrain > > trains1(big_n,vector<ConvolvedSpikeTrain>(big_p));
   vector<vector<ConvolvedSpikeTrain > > trains2(big_m,vector<ConvolvedSpikeTrain>(big_p));
@@ -279,7 +279,7 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
 
   /*
     Build the 2D array (observation, cell) of convolved spike trains
-    to be fed to the original metric implementation.
+    to be fed to the distance function.
   */
   vector<vector<ConvolvedSpikeTrain> > trains(big_n,vector<ConvolvedSpikeTrain>(big_p));
   for(Py_ssize_t n=0;n<big_n;++n){

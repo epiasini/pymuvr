@@ -6,6 +6,11 @@ This section documents the functions declared in
 
 ----------
 
+.. doxygenclass:: ConvolvedSpikeTrain
+   :members: ConvolvedSpikeTrain
+
+----------
+
 .. doxygenfunction:: d_exp_markage
 
 ----------
