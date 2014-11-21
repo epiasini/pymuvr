@@ -186,7 +186,7 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
 	trains1.at(n).at(p) = ConvolvedSpikeTrain(spikes, tau);
       } catch (overflow_error const& e) {
 	PyErr_SetString(PyExc_OverflowError, e.what());
-	goto fail;
+	return NULL;
       }
     }
   }
@@ -202,7 +202,7 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
 	trains2.at(m).at(p) = ConvolvedSpikeTrain(spikes, tau);
       } catch (overflow_error const& e) {
 	PyErr_SetString(PyExc_OverflowError, e.what());
-	goto fail;
+	return NULL;
       }
     }
   }
@@ -294,7 +294,7 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
 	trains.at(n).at(p) = ConvolvedSpikeTrain(spikes, tau);
       } catch (overflow_error const& e) {
 	PyErr_SetString(PyExc_OverflowError, e.what());
-	goto fail;
+	return NULL;
       }
     }
   }
