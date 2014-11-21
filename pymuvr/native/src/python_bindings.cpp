@@ -221,7 +221,7 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
   }
   /* Perform the core distance calculations */
   try{
-    d_exp_markage_rect(c_d_matrix, trains1, trains2, cos);
+    distance(trains1, trains2, cos, c_d_matrix);
   }catch (invalid_argument const& e){
     PyErr_SetString(PyExc_IndexError, e.what());
     goto fail;
@@ -314,7 +314,7 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
 
   /* Perform the core distance calculations */
   try{
-  d_exp_markage(c_d_matrix, trains, cos);
+    distance(trains, cos, c_d_matrix);
   }catch (invalid_argument const& e){
     PyErr_SetString(PyExc_ValueError, e.what());
     goto fail;

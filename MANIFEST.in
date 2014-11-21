@@ -1,5 +1,6 @@
 include COPYING
 include README.rst
 include pymuvr/native/include/van_rossum_multiunit.hpp
+include pymuvr/native/include/convolved_spike_train.hpp
 include docs/*
 include pymuvr/examples/*.py

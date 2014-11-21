@@ -11,9 +11,6 @@ This section documents the functions declared in
 
 ----------
 
-.. doxygenfunction:: d_exp_markage
+.. doxygenfunction:: distance(std::vector< std::vector< ConvolvedSpikeTrain > > &, double, double **)
 
-----------
-
-.. doxygenfunction:: d_exp_markage_rect
-
+.. doxygenfunction:: distance(std::vector< std::vector< ConvolvedSpikeTrain > > &, std::vector< std::vector< ConvolvedSpikeTrain > > &, double, double **)

@@ -40,9 +40,9 @@ double inner_product(ConvolvedSpikeTrain & u, ConvolvedSpikeTrain & v);
 int inner_product_zero_tau(ConvolvedSpikeTrain & u, ConvolvedSpikeTrain & v);
 
 
-void d_exp_markage(double **d_matrix,
-		   vector< vector<ConvolvedSpikeTrain> > & trains,
-		   double c)
+void distance(vector< vector<ConvolvedSpikeTrain> > & trains,
+	      double c,
+	      double **d_matrix)
 {
   unsigned int big_n = trains.size(); // number of observations
   unsigned int big_p = trains.front().size(); // number of cells per observation
@@ -93,10 +93,10 @@ void d_exp_markage(double **d_matrix,
 }
 
 
-void d_exp_markage_rect(double **d_matrix,
-			vector< vector<ConvolvedSpikeTrain> > & trains1,
-			vector< vector<ConvolvedSpikeTrain> > & trains2,
-			double c)
+void distance(vector< vector<ConvolvedSpikeTrain> > & trains1,
+	      vector< vector<ConvolvedSpikeTrain> > & trains2,
+	      double c,
+	      double **d_matrix)
 {
   unsigned int big_n=trains1.size(); // number of observations in first set
   unsigned int big_m=trains2.size(); // number of observations in second set

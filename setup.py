@@ -6,7 +6,7 @@ import os
 import codecs
 import numpy
 
-version = '1.2.0'
+version = '1.2.1dev'
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -38,7 +38,8 @@ setup (name="pymuvr",
            "Programming Language :: Python :: Implementation :: CPython",
            "Programming Language :: Python :: 2.7",
            "Programming Language :: Python :: 3.2",
-           "Programming Language :: Python :: 3.3"
+           "Programming Language :: Python :: 3.3",
+           "Programming Language :: Python :: 3.4"
        ],
        packages=["pymuvr",
                  "pymuvr.native",

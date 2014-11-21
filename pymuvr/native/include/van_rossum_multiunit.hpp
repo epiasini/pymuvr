@@ -25,9 +25,6 @@
  * Square (all-to-all) distance matrix for a set of multi-unit spike
  * trains.
  *
- * 
- * \param[out] d_matrix The \a trains.size() x \a trains.size() matrix
- * where the results will be written.
  *
  * \param[in] trains The set of multi unit spike trains.
  *
@@ -40,10 +37,13 @@
  *
  * \param[in] c Cosine of the multi-unit mixing angle. \a c=0 corresponds
  * to labelled-line code, \a c=1 to summed-population code.
- */
-void d_exp_markage(double **d_matrix,
-		   std::vector< std::vector<ConvolvedSpikeTrain> > & trains,
-		   double c);
+ * 
+ * \param[out] d_matrix The \a trains.size() x \a trains.size() matrix
+ * where the results will be written.
+ * */
+void distance(std::vector< std::vector<ConvolvedSpikeTrain> > & trains,
+	      double c,
+	      double **d_matrix);
 
 
 /*!
@@ -51,9 +51,6 @@ void d_exp_markage(double **d_matrix,
  * spike trains (observations).
  *
  * 
- * \param[out] d_matrix The \a trains1.size() x \a trains2.size()
- * matrix where the results will be written.
- *
  * \param[in] trains1,trains2 The sets of multi unit spike trains.
  *
  * \param[in] tau Time scale for the exponential kernel. There is a
@@ -65,10 +62,13 @@ void d_exp_markage(double **d_matrix,
  *
  * \param[in] c Cosine of the multi-unit mixing angle. \a c=0 corresponds
  * to labelled-line code, \a c=1 to summed-population code.
+ *
+ * \param[out] d_matrix The \a trains1.size() x \a trains2.size()
+ * matrix where the results will be written.
  */
-void d_exp_markage_rect(double **d_matrix,
-			std::vector< std::vector<ConvolvedSpikeTrain> > & trains1,
-			std::vector< std::vector<ConvolvedSpikeTrain> > & trains2,
-			double c);
+void distance(std::vector< std::vector<ConvolvedSpikeTrain> > & trains1,
+	      std::vector< std::vector<ConvolvedSpikeTrain> > & trains2,
+	      double c,
+	      double **d_matrix);
 
 #endif
