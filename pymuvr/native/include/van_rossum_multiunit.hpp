@@ -28,13 +28,6 @@
  *
  * \param[in] trains The set of multi unit spike trains.
  *
- * \param[in] tau Time scale for the exponential kernel. There is a
- * limit to how small \a tau can be compared to the absolute value of
- * the spike times. An exception will be raised if this limit is
- * exceeded; its value is system-dependent, but as a rule of thumb \a
- * tau and the spike times should be within 4 orders of magnitude of
- * each other.
- *
  * \param[in] c Cosine of the multi-unit mixing angle. \a c=0 corresponds
  * to labelled-line code, \a c=1 to summed-population code.
  * 
@@ -53,13 +46,6 @@ void distance(std::vector< std::vector<ConvolvedSpikeTrain> > & trains,
  * 
  * \param[in] trains1,trains2 The sets of multi unit spike trains.
  *
- * \param[in] tau Time scale for the exponential kernel. There is a
- * limit to how small \a tau can be compared to the absolute value of
- * the spike times. An exception will be raised if this limit is
- * exceeded; its value is system-dependent, but as a rule of thumb \a
- * tau and the spike times should be within 4 orders of magnitude of
- * each other.
- *
  * \param[in] c Cosine of the multi-unit mixing angle. \a c=0 corresponds
  * to labelled-line code, \a c=1 to summed-population code.
  *
@@ -70,5 +56,10 @@ void distance(std::vector< std::vector<ConvolvedSpikeTrain> > & trains1,
 	      std::vector< std::vector<ConvolvedSpikeTrain> > & trains2,
 	      double c,
 	      double **d_matrix);
+
+
+/*!
+ * Square (all-to-all) inner product matrix for 
+ */
 
 #endif
