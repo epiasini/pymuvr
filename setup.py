@@ -15,7 +15,8 @@ with codecs.open(os.path.join(here, "README.rst"), encoding="utf-8") as f:
     long_description = f.read()
 
 ext_module = Extension("pymuvr.native.bindings",
-                       sources=["pymuvr/native/src/van_rossum_multiunit.cpp",
+                       sources=["pymuvr/native/src/convolved_spike_train.cpp",
+                                "pymuvr/native/src/van_rossum_multiunit.cpp",
                                 "pymuvr/native/src/python_bindings.cpp"],
                        include_dirs=[numpy.get_include(),
                                      "pymuvr/native/include"])

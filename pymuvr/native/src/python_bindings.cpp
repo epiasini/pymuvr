@@ -6,6 +6,7 @@
 #include <stdexcept>
 
 #include "numpy/arrayobject.h"
+#include "convolved_spike_train.hpp"
 #include "van_rossum_multiunit.hpp"
 
 using namespace std;
@@ -42,7 +43,7 @@ Return the *bipartite* (rectangular) dissimilarity matrix between the observatio
 \
 :return: A len(observations1) x len(observations2) numpy array containing the distance between each pair of observations that can be formed by taking one observation from *observations1* and one from *observations2*.\n\
 :rtype: *numpy.ndarray*\n\
-:raises IndexError: if the number of cells in the observations in *observations1* is differnt from that in *observations2*.\n\
+:raises IndexError: if the observations in *observations1* and *observations2* don't have all the same number of cells.\n\
 :raises OverflowError: if *tau* falls in the forbidden interval.";
 
 const char * square_distance_matrix_docstring = "square_distance_matrix(observations, cos, tau)\n\n\
@@ -54,6 +55,7 @@ Return the *all-to-all* (square) dissimilarity matrix for the given list of obse
 \
 :return: A len(observations) x len(observations) numpy array containing the distance between all possible pairs of observations.\n\
 :rtype: *numpy.ndarray*\n\
+:raises IndexError: if the observations in *observations* don't have all the same number of cells.\n\
 :raises: **OverflowError** - if *tau* falls in the forbidden interval.\n\
 \
 Effectively equivalent to *distance_matrix(observations, observations, cos, tau)*, but optimised for speed. See the *distance_matrix* description for details.\n";
@@ -147,8 +149,7 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
     activity realisations", or "multi-unit spike trains") in the first
     set and big_m observations in the second set, and each of them
     must be composed by big_p single-unit spike trains, but each of
-    the single-unit spike train can have a different length. This
-    means the 3D arrays don't have a regular shape.
+    the single-unit spike train can have a different length.
   */
   big_n = PyList_Size(observations1);
   big_m = PyList_Size(observations2);
@@ -168,17 +169,24 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
   }
 
   /*
-    Build the 3D arrays (observation, cell, spiketime) to be fed to
-    the original metric implementation.
+    Build the 2D arrays (observation, cell) of convolved spike trains
+    to be fed to the original metric implementation.
   */
-  vector<vector<vector<double> > > trains1(big_n,vector<vector<double> >(big_p));
-  vector<vector<vector<double> > > trains2(big_m,vector<vector<double> >(big_p));
+  vector<vector<ConvolvedSpikeTrain > > trains1(big_n,vector<ConvolvedSpikeTrain>(big_p));
+  vector<vector<ConvolvedSpikeTrain > > trains2(big_m,vector<ConvolvedSpikeTrain>(big_p));
   for(Py_ssize_t n=0;n<big_n;++n){
     PyObject *ob = PyList_GetItem(observations1, n);
     for(Py_ssize_t p=0;p<big_p;++p){
       PyObject *cell = PyList_GetItem(ob, p);
+      vector <double> spikes; 
       for(Py_ssize_t s=0;s<PyList_Size(cell);++s){
-	trains1.at(n).at(p).push_back(PyFloat_AsDouble(PyList_GetItem(cell, s)));
+	spikes.push_back(PyFloat_AsDouble(PyList_GetItem(cell, s)));
+      }
+      try {
+	trains1.at(n).at(p) = ConvolvedSpikeTrain(spikes, tau);
+      } catch (overflow_error const& e) {
+	PyErr_SetString(PyExc_OverflowError, e.what());
+	goto fail;
       }
     }
   }
@@ -186,8 +194,15 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
     PyObject *ob = PyList_GetItem(observations2, m);
     for(Py_ssize_t p=0;p<big_p;++p){
       PyObject *cell = PyList_GetItem(ob, p);
+      vector <double> spikes;
       for(Py_ssize_t s=0;s<PyList_Size(cell);++s){
-	trains2.at(m).at(p).push_back(PyFloat_AsDouble(PyList_GetItem(cell, s)));
+	spikes.push_back(PyFloat_AsDouble(PyList_GetItem(cell, s)));
+      }
+      try {
+	trains2.at(m).at(p) = ConvolvedSpikeTrain(spikes, tau);
+      } catch (overflow_error const& e) {
+	PyErr_SetString(PyExc_OverflowError, e.what());
+	goto fail;
       }
     }
   }
@@ -206,10 +221,7 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
   }
   /* Perform the core distance calculations */
   try{
-    d_exp_markage_rect(c_d_matrix, trains1, trains2, tau, cos);
-  }catch (overflow_error const& e){
-    PyErr_SetString(PyExc_OverflowError, e.what());
-    goto fail;
+    d_exp_markage_rect(c_d_matrix, trains1, trains2, cos);
   }catch (invalid_argument const& e){
     PyErr_SetString(PyExc_IndexError, e.what());
     goto fail;
@@ -254,7 +266,7 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
     activity realisations", or "multi-unit spike trains"), and each of
     them must be composed composed by big_p single-unit spike trains,
     but each of the single-unit spike train can have a different
-    length. This means the 3D array doesn't have a regular shape.
+    length.
   */
   big_n = PyList_Size(observations);
   big_p = PyList_Size(PyList_GetItem(observations, (Py_ssize_t)0));
@@ -266,16 +278,23 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
   }
 
   /*
-    Build the 3D array (observation, cell, spiketime) to be fed to the
-    original metric implementation.
+    Build the 2D array (observation, cell) of convolved spike trains
+    to be fed to the original metric implementation.
   */
-  vector<vector<vector<double> > > trains(big_n,vector<vector<double> >(big_p));
+  vector<vector<ConvolvedSpikeTrain> > trains(big_n,vector<ConvolvedSpikeTrain>(big_p));
   for(Py_ssize_t n=0;n<big_n;++n){
     PyObject *ob = PyList_GetItem(observations, n);
     for(Py_ssize_t p=0;p<big_p;++p){
       PyObject *cell = PyList_GetItem(ob, p);
+      vector<double> spikes;
       for(Py_ssize_t s=0;s<PyList_Size(cell);++s){
-	trains.at(n).at(p).push_back(PyFloat_AsDouble(PyList_GetItem(cell, s)));
+	spikes.push_back(PyFloat_AsDouble(PyList_GetItem(cell, s)));
+      }
+      try {
+	trains.at(n).at(p) = ConvolvedSpikeTrain(spikes, tau);
+      } catch (overflow_error const& e) {
+	PyErr_SetString(PyExc_OverflowError, e.what());
+	goto fail;
       }
     }
   }
@@ -295,10 +314,7 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
 
   /* Perform the core distance calculations */
   try{
-  d_exp_markage(c_d_matrix, trains, tau, cos);
-  }catch (overflow_error const& e){
-    PyErr_SetString(PyExc_OverflowError, e.what());
-    goto fail;
+  d_exp_markage(c_d_matrix, trains, cos);
   }catch (invalid_argument const& e){
     PyErr_SetString(PyExc_ValueError, e.what());
     goto fail;
