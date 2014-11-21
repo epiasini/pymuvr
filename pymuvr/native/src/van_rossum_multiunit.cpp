@@ -144,6 +144,47 @@ void distance(vector< vector<ConvolvedSpikeTrain> > & trains1,
 }
 
 
+void inner_product(vector< vector<ConvolvedSpikeTrain> > & trains,
+		   double c,
+		   double **g_matrix)
+{
+  /* TODO: optimise as for the distance function */
+  inner_product(trains, trains, c, g_matrix);
+}
+
+
+void inner_product(vector< vector<ConvolvedSpikeTrain> > & trains1,
+		   vector< vector<ConvolvedSpikeTrain> > & trains2,
+		   double c,
+		   double **g_matrix)
+{
+  unsigned int big_n=trains1.size(); // number of observations in first set
+  unsigned int big_m=trains2.size(); // number of observations in second set
+  unsigned int big_p=trains1.front().size(); // number of cells
+
+  if (trains2.front().size() != big_p) {
+    throw invalid_argument("trying to compare two observations with a different number of cells.");
+  }
+  
+  for(unsigned int n=0; n<big_n; ++n) {
+    for(unsigned int m=0; m<big_m; ++m) {
+      g_matrix[n][m] = 0;
+      for(unsigned int p=0; p<big_p; ++p) {
+	// same-cell term
+	g_matrix[n][m] += inner_product(trains1[n][p], trains2[m][p]);
+
+	// cross-cell terms
+	for(unsigned int q=p+1; q<big_p; ++q) {
+	  g_matrix[n][m] += c * inner_product(trains1[n][p], trains2[m][q]);
+	  g_matrix[n][m] += c * inner_product(trains2[m][p], trains1[n][q]);
+	} 
+      }
+    }
+  }
+}
+/******************************/
+/* Functions for internal use */
+/******************************/
 int inner_product_zero_tau(ConvolvedSpikeTrain & u,
 			   ConvolvedSpikeTrain & v)
 {

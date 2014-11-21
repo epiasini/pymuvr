@@ -7,3 +7,7 @@ C++ API reference
 .. doxygenfunction:: distance(std::vector< std::vector< ConvolvedSpikeTrain > > &, double, double **)
 
 .. doxygenfunction:: distance(std::vector< std::vector< ConvolvedSpikeTrain > > &, std::vector< std::vector< ConvolvedSpikeTrain > > &, double, double **)
+
+.. doxygenfunction:: inner_product(std::vector< std::vector< ConvolvedSpikeTrain > > &, double, double **)
+
+.. doxygenfunction:: inner_product(std::vector< std::vector< ConvolvedSpikeTrain > > &, std::vector< std::vector< ConvolvedSpikeTrain > > &, double, double **)
