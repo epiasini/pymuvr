@@ -1,6 +1,6 @@
 /* Use with somthing like
  *
- * g++ -o test_train -Wall -iquote ../include ../src/convolved_spike_train.cpp ../src/van_rossum_multiunit.cpp test_distance.cpp
+ * g++ -o test_distance -Wall -iquote ../include ../src/convolved_spike_train.cpp ../src/van_rossum_multiunit.cpp test_distance.cpp
  */
 
 #include "convolved_spike_train.hpp"

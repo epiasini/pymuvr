@@ -2,28 +2,24 @@
 
 #include "convolved_spike_train.hpp"
 
-#include<cstdlib>
 #include<stdexcept>
 #include<vector>
 #include<cmath>
-#include<iostream>
-
-/* Check if we're compiling with Visual Studio */
+/* Check if we're compiling with Visual Studio. */
 #ifdef _MSC_VER
 #include <float.h>
 #endif
 
-
-
 /* Visual Studio does not have isfinite; use _finite() instead */
 #ifdef _MSC_VER
-bool isfinite(long double x)
-{
+bool isfinite(long double x) {
     return _finite(x);
 }
 #endif
 
-using namespace std;
+using std::sqrt; // from cmath 
+using std::vector; // from vector
+using std::invalid_argument; // from stdexcept
 
 /*! 
  * Compute the inner product between two single-unit convolved spike
@@ -151,44 +147,39 @@ void d_exp_markage_rect(double **d_matrix,
 int inner_product_zero_tau(ConvolvedSpikeTrain & u,
 			   ConvolvedSpikeTrain & v)
 {
-
-  if(u.size==0 || v.size==0)
+  if(u.size==0 || v.size==0) {
     return 0;
+  }
 
   int result = 0;
   int j = u.size - 1;
 
-  for (int i=v.size-1; i>=0; --i)
-    {
-      /*
-	Look for the index of largest spike time in u which is
-	smaller or equal than the ith spike time of v. Leave the
-	index set to zero if you don't find any.
-      */
-      while(j>0 && u.spikes[j]>v.spikes[i])
-	j--;
-      /*
-	If the spike selected in u coincides with the one we're
-	considering in v, add 1 to the result.
-      */
-      if (u.spikes[j]==v.spikes[i])
-	{
-	  result+=1;
-	}
+  for (int i=v.size-1; i>=0; --i) {
+    /* Look for the index of largest spike time in u which is smaller
+	or equal than the ith spike time of v. Leave the index set to
+	zero if you don't find any. */
+    while(j>0 && u.spikes[j]>v.spikes[i]) {
+      j--;
     }
+    /* If the spike selected in u coincides with the one we're
+       considering in v, add 1 to the result. */
+    if (u.spikes[j]==v.spikes[i]) {
+      result+=1;
+    }
+  }
 
   return result;
 }
 
 
 double inner_product(ConvolvedSpikeTrain & u, ConvolvedSpikeTrain & v)
-{
-  
-  if(u.size==0||v.size==0)
+{ 
+  if(u.size==0 || v.size==0) {
     return 0;
+  }
 
-  if (u.tau==0){
-    if (u.tau!=v.tau){
+  if (u.tau==0) {
+    if (u.tau!=v.tau) {
       throw invalid_argument("trying to compute the inner product of a spike train convolved with tau=0 and one with tau!=0");
     } else {
       return inner_product_zero_tau(u, v);
@@ -199,69 +190,55 @@ double inner_product(ConvolvedSpikeTrain & u, ConvolvedSpikeTrain & v)
   // we'll use j as an index to iterate backwards on the spikes in u
   int j = u.size - 1;
 
-  for(int i=v.size-1; i>=0; --i)
-    {
-      /*
-	Look for the index of largest spike time in u which is
-	smaller or equal than the ith spike time of v. Exit from
-	the loop if you don't find any. Note that this, in general, is
-	not the same thing as calculating J(i) in the paper (Houghton
-	and Kreuz 2012), because we allow for u[j] to be
-	equal to v[i].
-      */
-      while(j>=0 && u.spikes[j]>v.spikes[i])
-	  j--;
-      if(j<0)
-	break;
-      /*
-	If the spike selected in u coincides with the one we're
-	considering in v, add 1 to the quantity being
-	calculated. Adjust the 'j' index to point at the previous
-	spike, which now is guaranteed to correspond to the J(i) index
-	in the paper mentioned above; unless it does not exist, in
-	which case we exit from the loop. Note that this passage is
-	not mirrored in the 'symmetric' loop below, as we only need to
-	count each pair of coincident spikes once.
-      */
-      if (u.spikes[j]==v.spikes[i])
-	{
-	  result+=1;
-	  j--;
-	}
-      if(j<0)
-	break;
-      /*
-	Compute the ith term of the main sum we're calculating, using
-	the precomputed exponentials and the markage vector.
-      */
-      result += u.exp_pos[j] * v.exp_neg[i] * (u.markage[j] + 1);	
+  for(int i=v.size-1; i>=0; --i) {
+    /* Look for the index of largest spike time in u which is smaller
+       or equal than the ith spike time of v. Exit from the loop if
+       you don't find any. Note that this, in general, is not the same
+       thing as calculating J(i) in the paper (Houghton and Kreuz
+       2012), because we allow for u[j] to be equal to v[i]. */
+    while(j>=0 && u.spikes[j]>v.spikes[i]) {
+      j--;
     }
+    if(j<0) {
+      break;
+    }
+    /* If the spike selected in u coincides with the one we're
+       considering in v, add 1 to the quantity being
+       calculated. Adjust the 'j' index to point at the previous
+       spike, which now is guaranteed to correspond to the J(i) index
+       in the paper mentioned above; unless it does not exist, in
+       which case we exit from the loop. Note that this passage is not
+       mirrored in the 'symmetric' loop below, as we only need to
+       count each pair of coincident spikes once. */
+    if (u.spikes[j]==v.spikes[i]) {
+      result+=1;
+      j--;
+    }
+    if(j<0) {
+      break;
+    }
+    /* Compute the ith term of the main sum we're calculating, using
+       the precomputed exponentials and the markage vector. */
+    result += u.exp_pos[j] * v.exp_neg[i] * (u.markage[j] + 1);	
+  }
 
   // reset j; we'll now use it as an index to iterate backwards on the spikes in v
   j = v.size - 1;
 
-  for(int i=u.size-1; i>=0; --i)
-    {
-      /*
-	Unlike above, calculate directly the index corresponding to
-	the largest spike time in v which is _strictly_ smaller
-	than the ith spike time of u. Exit from the loop if you
-	don't find any.
-      */
-      while(j>=0 && v.spikes[j]>=u.spikes[i])
-	j--;
-      if(j<0)
-	break;
-      /*
-	Compute the ith term of the main sum we're calculating, using
-	the precomputed exponentials and the markage vector.
-      */
-      result += v.exp_pos[j] * u.exp_neg[i] * (v.markage[j] + 1);
+  for(int i=u.size-1; i>=0; --i) {
+    /* Unlike above, calculate directly the index corresponding to the
+       largest spike time in v which is _strictly_ smaller than the
+       ith spike time of u. Exit from the loop if you don't find
+       any. */
+    while(j>=0 && v.spikes[j]>=u.spikes[i]) {
+      j--;
     }
+    if(j<0) {
+      break;
+    }
+    /* Compute the ith term of the main sum we're calculating, using
+       the precomputed exponentials and the markage vector. */
+    result += v.exp_pos[j] * u.exp_neg[i] * (v.markage[j] + 1);
+  }
   return result;
-
 }
-
-
-
-

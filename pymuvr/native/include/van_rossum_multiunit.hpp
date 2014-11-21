@@ -17,8 +17,6 @@
 
 #include<vector>
 
-using namespace std;
-
 
 /*!
  * Square (all-to-all) distance matrix for a set of multi-unit spike
@@ -41,7 +39,7 @@ using namespace std;
  * to labelled-line code, \a c=1 to summed-population code.
  */
 void d_exp_markage(double **d_matrix,
-		   vector< vector<ConvolvedSpikeTrain> > & trains,
+		   std::vector< std::vector<ConvolvedSpikeTrain> > & trains,
 		   double c);
 
 
@@ -66,8 +64,8 @@ void d_exp_markage(double **d_matrix,
  * to labelled-line code, \a c=1 to summed-population code.
  */
 void d_exp_markage_rect(double **d_matrix,
-			vector< vector<ConvolvedSpikeTrain> > & trains1,
-			vector< vector<ConvolvedSpikeTrain> > & trains2,
+			std::vector< std::vector<ConvolvedSpikeTrain> > & trains1,
+			std::vector< std::vector<ConvolvedSpikeTrain> > & trains2,
 			double c);
 
 #endif
