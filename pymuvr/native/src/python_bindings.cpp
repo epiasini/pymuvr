@@ -34,6 +34,8 @@ static PyObject * square_dissimilarity_matrix(PyObject *self, PyObject *args);
  * observations[i][j][k] is the kth spiketime of the jth cell in the
  * ith observation.
  *
+ * \param[in] tau Time scale for the exponential kernel.
+ *
  * \param[out] trains 2D array (observation, cell) that will be filled
  * with convolved spike trains.
  */
@@ -82,9 +84,9 @@ Return the *all-to-all* (square) dissimilarity matrix for the given list of obse
 :return: A len(observations) x len(observations) numpy array containing the dissimilarity (distance or inner product) between all possible pairs of observations.\n\
 :rtype: *numpy.ndarray*\n\
 :raises IndexError: if the observations in *observations* don't have all the same number of cells.\n\
-:raises: **OverflowError** - if *tau* falls in the forbidden interval.\n\
+:raises OverflowError: if *tau* falls in the forbidden interval.\n\
 \
-Effectively equivalent to *dissimilarity_matrix(observations, observations, cos, tau)*, but optimised for speed. See the *dissimilarity_matrix* description for details.\n";
+Effectively equivalent to *dissimilarity_matrix(observations, observations, cos, tau)*, but optimised for speed. See the *dissimilarity_matrix* description for details.";
 
 /*==== method table ====*/
 static PyMethodDef bindings_methods[] = {

@@ -4,7 +4,9 @@ Usage
 Reference
 ---------
 
-The module exposes two functions:
+.. autofunction:: pymuvr.dissimilarity_matrix
+
+.. autofunction:: pymuvr.square_dissimilarity_matrix
 
 .. autofunction:: pymuvr.distance_matrix
 
