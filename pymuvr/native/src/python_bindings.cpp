@@ -86,7 +86,7 @@ Return the *all-to-all* (square) dissimilarity matrix for the given list of obse
 :raises IndexError: if the observations in *observations* don't have all the same number of cells.\n\
 :raises OverflowError: if *tau* falls in the forbidden interval.\n\
 \
-Effectively equivalent to *dissimilarity_matrix(observations, observations, cos, tau)*, but optimised for speed. See the *dissimilarity_matrix* description for details.";
+Effectively equivalent to ``dissimilarity_matrix(observations, observations, cos, tau)``, but optimised for speed. See :func:`pymuvr.dissimilarity_matrix` for details.";
 
 /*==== method table ====*/
 static PyMethodDef bindings_methods[] = {

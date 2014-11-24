@@ -22,7 +22,7 @@ def distance_matrix(trains1, trains2, cos, tau):
     """
     Return the *bipartite* (rectangular) distance matrix between the observations in the first and the second list.
 
-    Convenience function; equivalent to :func:`pymuvr.dissimilarity_matrix` with ``mode`` fixed to ``"distance"``.
+    Convenience function; equivalent to ``dissimilarity_matrix(trains1, trains2, cos, tau, "distance")``. Refer to :func:`pymuvr.dissimilarity_matrix` for full documentation.
     """
     return dissimilarity_matrix(trains1, trains2, cos, tau, "distance")
 
@@ -30,6 +30,6 @@ def square_distance_matrix(trains, cos, tau):
     """
     Return the *all-to-all* (square) distance matrix for the given list of observations.
 
-    Convenience function; equivalent to :func:`pymuvr.square_dissimilarity_matrix` with ``mode`` fixed to ``"distance"``.
+    Convenience function; equivalent to ``square_dissimilarity_matrix(trains, cos, tau, "distance")``. Refer to :func:`pymuvr.square_dissimilarity_matrix` for full documentation.
     """
     return square_dissimilarity_matrix(trains, cos, tau, "distance")

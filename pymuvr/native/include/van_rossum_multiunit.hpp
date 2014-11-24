@@ -86,7 +86,7 @@ void inner_product(std::vector< std::vector<ConvolvedSpikeTrain> > & trains,
  * \param[in] c Cosine of the multi-unit mixing angle. \a c=0 corresponds
  * to labelled-line code, \a c=1 to summed-population code.
  *
- * \param[out] d_matrix The \a trains1.size() x \a trains2.size()
+ * \param[out] g_matrix The \a trains1.size() x \a trains2.size()
  * matrix where the results will be written.
  */
 void inner_product(std::vector< std::vector<ConvolvedSpikeTrain> > & trains1,
