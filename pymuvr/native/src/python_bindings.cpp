@@ -2,14 +2,14 @@
 
 #include "Python.h"
 #include <vector>
-#include <iostream>
 #include <stdexcept>
 
 #include "numpy/arrayobject.h"
 #include "convolved_spike_train.hpp"
 #include "van_rossum_multiunit.hpp"
 
-using namespace std;
+using std::vector; //from vector
+using std::overflow_error; using std::invalid_argument; // from stdexcept
 
 /*==== prototypes ====*/
 static PyObject * dissimilarity_matrix(PyObject *self, PyObject *args);
@@ -211,7 +211,6 @@ static PyObject * dissimilarity_matrix(PyObject *self, PyObject *args){
   /* Perform the core dissimilarity calculations */
   try{
     if (strcmp(mode, "inner product")==0) {
-      cout << endl << endl << "computing inner product" << endl << endl;
       inner_product(trains1, trains2, cos, c_d_matrix);
     } else if (strcmp(mode, "distance")==0) {
       distance(trains1, trains2, cos, c_d_matrix);
