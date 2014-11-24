@@ -25,7 +25,7 @@ using std::invalid_argument; // from stdexcept
  * Compute the inner product between two single-unit convolved spike
  * trains.
  */
-double inner_product(ConvolvedSpikeTrain & u, ConvolvedSpikeTrain & v);
+static double inner_product(ConvolvedSpikeTrain & u, ConvolvedSpikeTrain & v);
 
 /*! 
  * Compute the inner product of two convolved single unit spike trains
@@ -37,7 +37,7 @@ double inner_product(ConvolvedSpikeTrain & u, ConvolvedSpikeTrain & v);
  * Note that this assumes that neither train_a nor train_b cointain
  * repeating spikes.
  */
-int inner_product_zero_tau(ConvolvedSpikeTrain & u, ConvolvedSpikeTrain & v);
+static int inner_product_zero_tau(ConvolvedSpikeTrain & u, ConvolvedSpikeTrain & v);
 
 
 void distance(vector< vector<ConvolvedSpikeTrain> > & trains,
@@ -185,8 +185,8 @@ void inner_product(vector< vector<ConvolvedSpikeTrain> > & trains1,
 /******************************/
 /* Functions for internal use */
 /******************************/
-int inner_product_zero_tau(ConvolvedSpikeTrain & u,
-			   ConvolvedSpikeTrain & v)
+static int inner_product_zero_tau(ConvolvedSpikeTrain & u,
+				  ConvolvedSpikeTrain & v)
 {
   if(u.size==0 || v.size==0) {
     return 0;
@@ -213,7 +213,7 @@ int inner_product_zero_tau(ConvolvedSpikeTrain & u,
 }
 
 
-double inner_product(ConvolvedSpikeTrain & u, ConvolvedSpikeTrain & v)
+static double inner_product(ConvolvedSpikeTrain & u, ConvolvedSpikeTrain & v)
 { 
   if(u.size==0 || v.size==0) {
     return 0;

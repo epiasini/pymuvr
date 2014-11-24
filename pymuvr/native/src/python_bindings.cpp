@@ -16,6 +16,30 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args);
 
 static PyObject * square_distance_matrix(PyObject *self, PyObject *args);
 
+/*!
+ * Convert spike trains from their Python-based representation to a
+ * data structure based on ConvolvedSpikeTrain.
+ *
+ * At the Python level, sets of multiunit spike trains are represented
+ * as thrice-nested lists, where observations[i][j][k] is the kth
+ * spiketime of the jth cell in the ith observation. Internally, we
+ * use a vector-of-vector of instances of ConvolvedSpikeTrain. This
+ * function converts between the two data structures by extracting
+ * spike time data from the Python list-of-lists-of-lists and using it
+ * to fill the vector-of-vectors out-parameter with instances of
+ * ConvolvedSpikeTrain.
+ *
+ * \param[in] observations A Python list-of-lists-of-lists object
+ * representing a set of multiunit spike trains, such that \a
+ * observations[i][j][k] is the kth spiketime of the jth cell in the
+ * ith observation.
+ *
+ * \param[out] trains 2D array (observation, cell) that will be filled
+ * with convolved spike trains.
+ */
+static void nested_lists_to_spiketrain_vectors(PyObject *observations, double tau, vector <vector <ConvolvedSpikeTrain> > &trains);
+
+
 /*==== module initialisation ====*/
 /*
   See https://wiki.python.org/moin/PortingExtensionModulesToPy3k for
@@ -142,69 +166,29 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
 			&observations1, &observations2, &cos, &tau))
     return NULL;
   
-  /*
-    Find out the number of observations and of cells per
-    observation. Check that input observations all have the same
-    number of cells. There are big_n observations (ie "network
-    activity realisations", or "multi-unit spike trains") in the first
-    set and big_m observations in the second set, and each of them
-    must be composed by big_p single-unit spike trains, but each of
-    the single-unit spike train can have a different length.
-  */
+  /* Find out the number of observations per set and the number of
+     cells per observation. */
   big_n = PyList_Size(observations1);
   big_m = PyList_Size(observations2);
   big_p = PyList_Size(PyList_GetItem(observations1, (Py_ssize_t)0));
-  /* Check that input observations all have the same number of cells */
-  for(Py_ssize_t n=0;n<big_n;++n){
-    if (PyList_Size(PyList_GetItem(observations1, n)) != big_p){
-      PyErr_SetString(PyExc_IndexError, "trying to compare observations with a different number of cells.");
-      return NULL;
-    }
-  }
-  for(Py_ssize_t m=0;m<big_m;++m){
-    if (PyList_Size(PyList_GetItem(observations2, m)) != big_p){
-      PyErr_SetString(PyExc_IndexError, "trying to compare observations with a different number of cells.");
-      return NULL;
-    }
+
+  /* Check that number of cells in observations1 matches that in observations2 */
+  if (PyList_Size(PyList_GetItem(observations2, (Py_ssize_t)0)) != big_p){
+    PyErr_SetString(PyExc_IndexError, "trying to compare observations with a different number of cells.");
+    return NULL;
   }
 
   /*
     Build the 2D arrays (observation, cell) of convolved spike trains
     to be fed to the distance function.
   */
-  vector<vector<ConvolvedSpikeTrain > > trains1(big_n,vector<ConvolvedSpikeTrain>(big_p));
-  vector<vector<ConvolvedSpikeTrain > > trains2(big_m,vector<ConvolvedSpikeTrain>(big_p));
-  for(Py_ssize_t n=0;n<big_n;++n){
-    PyObject *ob = PyList_GetItem(observations1, n);
-    for(Py_ssize_t p=0;p<big_p;++p){
-      PyObject *cell = PyList_GetItem(ob, p);
-      vector <double> spikes; 
-      for(Py_ssize_t s=0;s<PyList_Size(cell);++s){
-	spikes.push_back(PyFloat_AsDouble(PyList_GetItem(cell, s)));
-      }
-      try {
-	trains1.at(n).at(p) = ConvolvedSpikeTrain(spikes, tau);
-      } catch (overflow_error const& e) {
-	PyErr_SetString(PyExc_OverflowError, e.what());
-	return NULL;
-      }
-    }
-  }
-  for(Py_ssize_t m=0;m<big_m;++m){
-    PyObject *ob = PyList_GetItem(observations2, m);
-    for(Py_ssize_t p=0;p<big_p;++p){
-      PyObject *cell = PyList_GetItem(ob, p);
-      vector <double> spikes;
-      for(Py_ssize_t s=0;s<PyList_Size(cell);++s){
-	spikes.push_back(PyFloat_AsDouble(PyList_GetItem(cell, s)));
-      }
-      try {
-	trains2.at(m).at(p) = ConvolvedSpikeTrain(spikes, tau);
-      } catch (overflow_error const& e) {
-	PyErr_SetString(PyExc_OverflowError, e.what());
-	return NULL;
-      }
-    }
+  vector<vector <ConvolvedSpikeTrain> > trains1(big_n, vector<ConvolvedSpikeTrain>(big_p));
+  vector<vector <ConvolvedSpikeTrain> > trains2(big_m, vector<ConvolvedSpikeTrain>(big_p));
+  nested_lists_to_spiketrain_vectors(observations1, tau, trains1);
+  nested_lists_to_spiketrain_vectors(observations2, tau, trains2);
+  /* Check if something went wrong while generating the convolved spike trains */
+  if (PyErr_Occurred() != NULL) {
+    return NULL;
   }
   
   /*
@@ -259,44 +243,20 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
 			&observations, &cos, &tau))
     return NULL;
   
-  /* 
-    Find out the number of observations and of cells per
-    observation. Check that input observations all have the same
-    number of cells. There are big_n observations (ie "network
-    activity realisations", or "multi-unit spike trains"), and each of
-    them must be composed composed by big_p single-unit spike trains,
-    but each of the single-unit spike train can have a different
-    length.
-  */
+  /* Find out the number of observations and the number of cells per
+     observation. */
   big_n = PyList_Size(observations);
   big_p = PyList_Size(PyList_GetItem(observations, (Py_ssize_t)0));
-  for(Py_ssize_t n=0;n<big_n;++n){
-    if (PyList_Size(PyList_GetItem(observations, n)) != big_p){
-      PyErr_SetString(PyExc_IndexError, "trying to compare observations with a different number of cells.");
-      return NULL;
-    }
-  }
 
   /*
     Build the 2D array (observation, cell) of convolved spike trains
     to be fed to the distance function.
   */
-  vector<vector<ConvolvedSpikeTrain> > trains(big_n,vector<ConvolvedSpikeTrain>(big_p));
-  for(Py_ssize_t n=0;n<big_n;++n){
-    PyObject *ob = PyList_GetItem(observations, n);
-    for(Py_ssize_t p=0;p<big_p;++p){
-      PyObject *cell = PyList_GetItem(ob, p);
-      vector<double> spikes;
-      for(Py_ssize_t s=0;s<PyList_Size(cell);++s){
-	spikes.push_back(PyFloat_AsDouble(PyList_GetItem(cell, s)));
-      }
-      try {
-	trains.at(n).at(p) = ConvolvedSpikeTrain(spikes, tau);
-      } catch (overflow_error const& e) {
-	PyErr_SetString(PyExc_OverflowError, e.what());
-	return NULL;
-      }
-    }
+  vector<vector <ConvolvedSpikeTrain> > trains(big_n, vector<ConvolvedSpikeTrain>(big_p));
+  nested_lists_to_spiketrain_vectors(observations, tau, trains);
+  /* Check if something went wrong while generating the convolved spike trains */
+  if (PyErr_Occurred() != NULL) {
+    return NULL;
   }
   
   /*
@@ -338,3 +298,36 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
 }
 
 
+static void nested_lists_to_spiketrain_vectors(PyObject *observations, double tau, vector <vector <ConvolvedSpikeTrain> > &trains)
+{
+  Py_ssize_t big_n = PyList_Size(observations);
+  Py_ssize_t big_p = PyList_Size(PyList_GetItem(observations, (Py_ssize_t)0));
+  /* Check that input observations all have the same number of
+     cells. There are big_n observations (ie "network activity
+     realisations", or "multi-unit spike trains"), and each of them
+     must be composed composed by big_p single-unit spike trains, but
+     each of the single-unit spike train can have a different
+     length. */
+  for(Py_ssize_t n=0;n<big_n;++n){
+    if (PyList_Size(PyList_GetItem(observations, n)) != big_p){
+      PyErr_SetString(PyExc_IndexError, "trying to compare observations with a different number of cells.");
+    }
+  }
+
+  /* Copy data from Python structure to our internal representation */
+  for(Py_ssize_t n=0;n<big_n;++n){
+    PyObject *ob = PyList_GetItem(observations, n);
+    for(Py_ssize_t p=0;p<big_p;++p){
+      PyObject *cell = PyList_GetItem(ob, p);
+      vector <double> spikes; 
+      for(Py_ssize_t s=0;s<PyList_Size(cell);++s){
+	spikes.push_back(PyFloat_AsDouble(PyList_GetItem(cell, s)));
+      }
+      try {
+	trains.at(n).at(p) = ConvolvedSpikeTrain(spikes, tau);
+      } catch (overflow_error const& e) {
+	PyErr_SetString(PyExc_OverflowError, e.what());
+      }
+    }
+  }
+}
