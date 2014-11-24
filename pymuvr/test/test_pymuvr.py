@@ -78,6 +78,18 @@ class TestTrivialTrains(unittest.TestCase):
         d = pymuvr.square_distance_matrix(observations, self.cos, 1e20)
         np.testing.assert_allclose(d, np.array([[0,0,1],[0,0,1],[1,1,0]]))
 
+    def test_inner_product_orthogonal(self):
+        observations = [[[1.0], []],
+                        [[], [0.5]]]
+        g = pymuvr.square_dissimilarity_matrix(observations, 0, 0.7, "inner product")
+        np.testing.assert_array_equal(g, np.array([[1,0],[0,1]]))
+
+    def test_inner_product_parallel(self):
+        observations = [[[1.0], [0.5]],
+                        [[0.5], [1.0]]]
+        g = pymuvr.square_dissimilarity_matrix(observations, 1, 0., "inner product")
+        np.testing.assert_array_equal(g, np.array([[2,2],[2,2]]))
+
 class TestExceptions(unittest.TestCase):
     def setUp(self):
         self.cos = 0.5
@@ -154,7 +166,7 @@ class TestRandomTrains(unittest.TestCase):
                                            tau)
                 self.assertEqual(d.shape, (3, len(self.observations)-3))
 
-    def test_compare_square_and_rectangular(self):
+    def test_compare_square_and_rectangular_distance(self):
         for cos in self.cos:
             for tau in self.tau:
                 d_rectangular = pymuvr.distance_matrix(self.observations,
@@ -166,6 +178,20 @@ class TestRandomTrains(unittest.TestCase):
                                                          tau)
                 np.testing.assert_allclose(d_rectangular, d_square, atol=5e-5)
 
+    def test_compare_square_and_rectangular_inner_product(self):
+        for cos in self.cos:
+            for tau in self.tau:
+                g_rectangular = pymuvr.dissimilarity_matrix(self.observations,
+                                                            self.observations,
+                                                            cos,
+                                                            tau,
+                                                            "inner product")
+                g_square = pymuvr.square_dissimilarity_matrix(self.observations,
+                                                              cos,
+                                                              tau,
+                                                              "inner product")
+                np.testing.assert_allclose(g_rectangular, g_square, atol=5e-5)
+
     def test_empty_spike_train(self):
         observations = [o[:] for o in self.observations]
         observations[0][0] = []
@@ -175,6 +201,24 @@ class TestRandomTrains(unittest.TestCase):
                                                        observations[3:],
                                                        cos,
                                                        tau)
+
+    def test_compare_distance_and_inner_product(self):
+        for cos in self.cos:
+            for tau in self.tau:
+                d = pymuvr.square_dissimilarity_matrix(self.observations,
+                                                       cos,
+                                                       tau,
+                                                       "distance")
+                g = pymuvr.square_dissimilarity_matrix(self.observations,
+                                                       cos,
+                                                       tau,
+                                                       "inner product")
+                d_from_g = np.zeros_like(d)
+                for i in range(d.shape[0]):
+                    for j in range(d.shape[1]):
+                        d_from_g[i,j] = np.sqrt(g[i,i] + g[j,j] - 2 * g[i,j])
+                np.testing.assert_allclose(d_from_g, d, atol=5e-5)
+
 
 
 @unittest.skipIf(not SPYKEUTILS_IS_AVAILABLE,
