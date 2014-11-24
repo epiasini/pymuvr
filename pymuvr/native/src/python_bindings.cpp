@@ -12,9 +12,9 @@
 using namespace std;
 
 /*==== prototypes ====*/
-static PyObject * distance_matrix(PyObject *self, PyObject *args);
+static PyObject * dissimilarity_matrix(PyObject *self, PyObject *args);
 
-static PyObject * square_distance_matrix(PyObject *self, PyObject *args);
+static PyObject * square_dissimilarity_matrix(PyObject *self, PyObject *args);
 
 /*!
  * Convert spike trains from their Python-based representation to a
@@ -57,7 +57,7 @@ static struct module_state _state;
 #endif
 
 /*==== docstrings ====*/
-const char * distance_matrix_docstring = "distance_matrix(observations1, observations2, cos, tau)\n\n\
+const char * dissimilarity_matrix_docstring = "dissimilarity_matrix(observations1, observations2, cos, tau, mode)\n\n\
 Return the *bipartite* (rectangular) dissimilarity matrix between the observations in the first and the second list.\n\n\
 \
 \
@@ -65,29 +65,31 @@ Return the *bipartite* (rectangular) dissimilarity matrix between the observatio
 :param float cos: mixing parameter controlling the interpolation between *labelled-line* mode (cos=0) and *summed-population* mode (cos=1). It corresponds to the cosine of the angle between the vectors used for the euclidean embedding of the multiunit spike trains.\n\
 :param float tau: time scale for the exponential kernel, controlling the interpolation between pure *coincidence detection* (tau=0) and *spike count* mode (very large tau). Note that setting tau=0 is always allowed, but there is a range (0, epsilon) of forbidden values that tau is not allowed to assume. The upper bound of this range is proportional to the absolute value of the largest spike time in *observations*, with the proportionality constant being system-dependent. As a rule of thumb tau and the spike times should be within 4 orders of magnitude of each other; for example, if the largest spike time is 10s a value of tau>1ms will be expected. An exception will be raised if tau falls in the forbidden range.\n\
 \
-:return: A len(observations1) x len(observations2) numpy array containing the distance between each pair of observations that can be formed by taking one observation from *observations1* and one from *observations2*.\n\
+:param string mode: type of dissimilarity measure to be computed. Must be either 'distance' or 'inner product'.\n\
+:return: A len(observations1) x len(observations2) numpy array containing the dissimilarity (distance or inner product) between each pair of observations that can be formed by taking one observation from *observations1* and one from *observations2*.\n\
 :rtype: *numpy.ndarray*\n\
 :raises IndexError: if the observations in *observations1* and *observations2* don't have all the same number of cells.\n\
 :raises OverflowError: if *tau* falls in the forbidden interval.";
 
-const char * square_distance_matrix_docstring = "square_distance_matrix(observations, cos, tau)\n\n\
+const char * square_dissimilarity_matrix_docstring = "square_dissimilarity_matrix(observations, cos, tau, mode)\n\n\
 Return the *all-to-all* (square) dissimilarity matrix for the given list of observations.\n\n\
 \
 :param list observations: A list of multi-unit spike trains to compare.\n\
 :param float cos: mixing parameter controlling the interpolation between *labelled-line* mode (cos=0) and *summed-population* mode (cos=1).\n\
 :param float tau: time scale for the exponential kernel, controlling the interpolation between pure *coincidence detection* (tau=0) and *spike count* mode (very large tau).\n\
 \
-:return: A len(observations) x len(observations) numpy array containing the distance between all possible pairs of observations.\n\
+:param string mode: type of dissimilarity measure to be computed. Must be either 'distance' or 'inner product'.\n\
+:return: A len(observations) x len(observations) numpy array containing the dissimilarity (distance or inner product) between all possible pairs of observations.\n\
 :rtype: *numpy.ndarray*\n\
 :raises IndexError: if the observations in *observations* don't have all the same number of cells.\n\
 :raises: **OverflowError** - if *tau* falls in the forbidden interval.\n\
 \
-Effectively equivalent to *distance_matrix(observations, observations, cos, tau)*, but optimised for speed. See the *distance_matrix* description for details.\n";
+Effectively equivalent to *dissimilarity_matrix(observations, observations, cos, tau)*, but optimised for speed. See the *dissimilarity_matrix* description for details.\n";
 
 /*==== method table ====*/
 static PyMethodDef bindings_methods[] = {
-  {"distance_matrix", distance_matrix, METH_VARARGS, distance_matrix_docstring},
-  {"square_distance_matrix", square_distance_matrix, METH_VARARGS, square_distance_matrix_docstring},
+  {"dissimilarity_matrix", dissimilarity_matrix, METH_VARARGS, dissimilarity_matrix_docstring},
+  {"square_dissimilarity_matrix", square_dissimilarity_matrix, METH_VARARGS, square_dissimilarity_matrix_docstring},
   {NULL, NULL, 0, NULL}  // Sentinel - marks the end of the structure
 };
 
@@ -132,7 +134,7 @@ initbindings(void)
 #if PY_MAJOR_VERSION >= 3
     PyObject *module = PyModule_Create(&moduledef);
 #else
-    PyObject *module = Py_InitModule("bindings", bindings_methods);
+    PyObject *module = Py_InitModule((char *) "bindings", bindings_methods);
 #endif
     import_array()
 
@@ -140,7 +142,7 @@ initbindings(void)
         INITERROR;
     struct module_state *st = GETSTATE(module);
 
-    st->error = PyErr_NewException("bindings.Error", NULL, NULL);
+    st->error = PyErr_NewException((char *) "bindings.Error", NULL, NULL);
     if (st->error == NULL) {
         Py_DECREF(module);
         INITERROR;
@@ -153,8 +155,9 @@ initbindings(void)
 
 /*==== function implementations ====*/
 
-static PyObject * distance_matrix(PyObject *self, PyObject *args){
+static PyObject * dissimilarity_matrix(PyObject *self, PyObject *args){
   double cos, tau;
+  char *mode;
   PyObject *observations1, *observations2, *py_d_matrix;
   Py_ssize_t big_n, big_m, big_p;
   npy_intp dims[2];
@@ -162,8 +165,8 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
   double **c_d_matrix;
 
   /* Parse arguments */
-  if (!PyArg_ParseTuple(args, "OOdd",
-			&observations1, &observations2, &cos, &tau))
+  if (!PyArg_ParseTuple(args, "OOdds",
+			&observations1, &observations2, &cos, &tau, &mode))
     return NULL;
   
   /* Find out the number of observations per set and the number of
@@ -180,7 +183,7 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
 
   /*
     Build the 2D arrays (observation, cell) of convolved spike trains
-    to be fed to the distance function.
+    to be fed to the dissimilarity function.
   */
   vector<vector <ConvolvedSpikeTrain> > trains1(big_n, vector<ConvolvedSpikeTrain>(big_p));
   vector<vector <ConvolvedSpikeTrain> > trains2(big_m, vector<ConvolvedSpikeTrain>(big_p));
@@ -192,8 +195,8 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
   }
   
   /*
-    Instantiate the dissimilarity (distance) matrix where the results
-    will be stored
+    Instantiate the dissimilarity matrix where the results will be
+    stored
   */
   dims[0] = big_n;
   dims[1] = big_m;
@@ -203,9 +206,17 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
     PyErr_SetString(PyExc_RuntimeError, "something went wrong while allocating the dissimilarity matrix.");
     goto fail;
   }
-  /* Perform the core distance calculations */
+  /* Perform the core dissimilarity calculations */
   try{
-    distance(trains1, trains2, cos, c_d_matrix);
+    if (strcmp(mode, "inner product")==0) {
+      cout << endl << endl << "computing inner product" << endl << endl;
+      inner_product(trains1, trains2, cos, c_d_matrix);
+    } else if (strcmp(mode, "distance")==0) {
+      distance(trains1, trains2, cos, c_d_matrix);
+    } else {
+      PyErr_SetString(PyExc_ValueError, "please specify the type of dissimilarity function ('distance' or 'inner product') to calculate.");
+      goto fail;
+    }
   }catch (invalid_argument const& e){
     PyErr_SetString(PyExc_IndexError, e.what());
     goto fail;
@@ -230,8 +241,9 @@ static PyObject * distance_matrix(PyObject *self, PyObject *args){
   return NULL;
 }
 
-static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
+static PyObject * square_dissimilarity_matrix(PyObject *self, PyObject *args){
   double cos, tau;
+  char *mode;
   PyObject *observations, *py_d_matrix;
   Py_ssize_t big_n, big_p;
   npy_intp dims[2];
@@ -239,8 +251,8 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
   double **c_d_matrix;
 
   /* Parse arguments */
-  if (!PyArg_ParseTuple(args, "Odd",
-			&observations, &cos, &tau))
+  if (!PyArg_ParseTuple(args, "Odds",
+			&observations, &cos, &tau, &mode))
     return NULL;
   
   /* Find out the number of observations and the number of cells per
@@ -250,7 +262,7 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
 
   /*
     Build the 2D array (observation, cell) of convolved spike trains
-    to be fed to the distance function.
+    to be fed to the dissimilarity function.
   */
   vector<vector <ConvolvedSpikeTrain> > trains(big_n, vector<ConvolvedSpikeTrain>(big_p));
   nested_lists_to_spiketrain_vectors(observations, tau, trains);
@@ -260,8 +272,8 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
   }
   
   /*
-    Instantiate the dissimilarity (distance) matrix where the results
-    will be stored
+    Instantiate the dissimilarity matrix where the results will be
+    stored
   */
   dims[0] = big_n;
   dims[1] = big_n;
@@ -272,9 +284,16 @@ static PyObject * square_distance_matrix(PyObject *self, PyObject *args){
     goto fail;
   }
 
-  /* Perform the core distance calculations */
+  /* Perform the core dissimilarity calculations */
   try{
-    distance(trains, cos, c_d_matrix);
+    if (strcmp(mode, "inner product")==0) {
+      inner_product(trains, cos, c_d_matrix);
+    } else if (strcmp(mode, "distance")==0) {
+      distance(trains, cos, c_d_matrix);
+    } else {
+      PyErr_SetString(PyExc_ValueError, "please specify the type of dissimilarity function ('distance' or 'inner product') to calculate.");
+      goto fail;
+    }
   }catch (invalid_argument const& e){
     PyErr_SetString(PyExc_ValueError, e.what());
     goto fail;

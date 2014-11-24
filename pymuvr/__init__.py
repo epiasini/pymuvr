@@ -16,4 +16,10 @@ else:
 
 # Expose the spike train distance functions defined in the C++
 # extension as top-level objects for the package.
-from .native.bindings import distance_matrix, square_distance_matrix
+from .native.bindings import dissimilarity_matrix, square_dissimilarity_matrix
+
+def distance_matrix(trains1, trains2, cos, tau):
+    return dissimilarity_matrix(trains1, trains2, cos, tau, "distance")
+
+def square_distance_matrix(trains, cos, tau):
+    return square_dissimilarity_matrix(trains, cos, tau, "distance")
