@@ -148,8 +148,26 @@ void inner_product(vector< vector<ConvolvedSpikeTrain> > & trains,
 		   double c,
 		   double **g_matrix)
 {
-  /* TODO: optimise as for the distance function */
-  inner_product(trains, trains, c, g_matrix);
+  unsigned int big_n=trains.size(); // number of observations
+  unsigned int big_p=trains.front().size(); // number of cell
+  
+  for(unsigned int n=0; n<big_n; ++n) {
+    for(unsigned int m=n; m<big_n; ++m) {
+      g_matrix[n][m] = 0;
+      for(unsigned int p=0; p<big_p; ++p) {
+	// same-cell term
+	g_matrix[n][m] += inner_product(trains[n][p], trains[m][p]);
+	
+	// cross-cell terms
+	for(unsigned int q=p+1; q<big_p; ++q) {
+	  g_matrix[n][m] += c * inner_product(trains[n][p], trains[m][q]);
+	  g_matrix[n][m] += c * inner_product(trains[m][p], trains[n][q]);
+	}
+      }
+      /* the matrix is symmetric */
+      g_matrix[m][n] = g_matrix[n][m];
+    }
+  }
 }
 
 
