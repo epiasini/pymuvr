@@ -5,17 +5,6 @@
 #include<stdexcept>
 #include<vector>
 #include<cmath>
-/* Check if we're compiling with Visual Studio. */
-#ifdef _MSC_VER
-#include <float.h>
-#endif
-
-/* Visual Studio does not have isfinite; use _finite() instead */
-#ifdef _MSC_VER
-bool isfinite(long double x) {
-    return _finite(x);
-}
-#endif
 
 using std::sqrt; // from cmath 
 using std::vector; // from vector
