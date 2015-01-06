@@ -10,6 +10,12 @@
 
 #include<vector>
 
+/* Visual Studio does not have isfinite; use _finite() instead */
+#ifdef _MSC_VER
+#include <float.h>
+bool isfinite(long double x);
+#endif
+
 /*!
  * A class representing a single-unit spike train for which several
  * helper vectors relating to a Van Rossum-like exponential

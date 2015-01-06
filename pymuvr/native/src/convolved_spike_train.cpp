@@ -5,19 +5,16 @@
 #include<numeric>
 #include<cmath>
 
-/* Check if we're compiling with Visual Studio */
-#ifdef _MSC_VER
-#include <float.h>
-#endif
-
 /* Visual Studio does not have isfinite; use _finite() instead */
 #ifdef _MSC_VER
 bool isfinite(long double x) {
     return _finite(x);
 }
+#else
+using std::isfinite;
 #endif
 
-using std::exp; using std::isfinite; // from cmath
+using std::exp; // from cmath
 using std::vector; // from vector
 using std::accumulate; // from numeric
 using std::overflow_error; // from stdexcept
