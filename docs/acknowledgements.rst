@@ -7,6 +7,6 @@ support from the EU Marie Curie Initial Training Network CEREBNET
 (FP7-ITN-PEOPLE-2008; 238686).
 
 Thanks to Robert Pröpper (author of `spykeutils
-<https://github.com/rproepp/spykeutils>`_) for reporting bugs and
-providing testing under Windows.
+<https://github.com/rproepp/spykeutils>`_) for testing under Windows
+and providing bugfixes.
 

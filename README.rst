@@ -17,7 +17,9 @@ there with bugfixes and improvements.
 
 Documentation
 -------------
-Full documentation is hosted at http://pymuvr.readthedocs.org/.
+
+Full documentation (with examples and full reference) is hosted at
+http://pymuvr.readthedocs.org/.
 
 Requirements
 ------------
@@ -31,43 +33,6 @@ Installation
 To install the latest release, run::
 
   pip install pymuvr
-
-If you prefer installing from git, use::
-
-  git clone https://github.com/epiasini/pymuvr.git
-  cd pymuvr
-  python setup.py install
-
-Usage
------
-The module exposes two functions::
-
-  pymuvr.distance_matrix(observations1, observations2, cos, tau)
-
-::
-
-   pymuvr.square_distance_matrix(observations, cos, tau)
-
-`distance_matrix` calculates the 'bipartite' (rectangular)
-dissimilarity matrix between the multi-unit trains in `observations1`
-and those in `observations2`.
-
-`square_distance_matrix` calculates the 'all-to-all' dissimilarity
-matrix between each pair of trains in parallel_trains. It's an
-optimised form of `distance_matrix(observations, observations, cos,
-tau)`.
-
-They both return their results as a 2D numpy array.
-
-The `observations` arguments must be thrice-nested lists of
-spiketimes, in such a way that `observations[i][j][k]` represents
-the time of the kth spike of the jth cell of the ith observation.  `cos` and
-`tau` are the usual parameters for the multiunit Van Rossum metric.
-
-See `examples/benchmark_versus_spykeutils.py` for an example of usage
-comparing the performance of pymuvr with the pure Python
-implementation of the multiunit Van Rossum distance in
-`spykeutils <https://github.com/rproepp/spykeutils>`_.
 
 License
 -------

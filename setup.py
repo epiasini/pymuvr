@@ -6,7 +6,7 @@ import os
 import codecs
 import numpy
 
-version = '1.2.1dev'
+version = '1.3.0'
 
 here = os.path.abspath(os.path.dirname(__file__))
 
