@@ -3,9 +3,7 @@ pymuvr
 
 Overview
 --------
-.. image:: https://travis-ci.org/epiasini/pymuvr.svg?branch=master
-    :target: https://travis-ci.org/epiasini/pymuvr
-    :alt: build status
+|status| |pipy_version|
 
 A Python package for the fast calculation of Multi-unit Van Rossum
 neural spike train metrics, with the kernel-based algorithm described
@@ -42,3 +40,12 @@ version. See COPYING for details.
 Getting the source
 ------------------
 Source code for pymuvr is hosted at https://github.com/epiasini/pymuvr.
+
+
+.. |status| image:: https://travis-ci.org/epiasini/pymuvr.svg?branch=master
+    :target: https://travis-ci.org/epiasini/pymuvr
+    :alt: build status
+    
+.. |pipy_version| image:: https://img.shields.io/pypi/v/pymuvr.svg
+    :target: https://pypi.python.org/pypi/pymuvr
+    :alt: PyPI version
