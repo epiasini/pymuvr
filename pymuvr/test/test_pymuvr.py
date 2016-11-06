@@ -250,7 +250,7 @@ class TestCompareWithSpykeutils(unittest.TestCase):
             for tau in self.tau:
                 sutils_d = stm.van_rossum_multiunit_dist(self.sutils_units,
                                                          weighting=cos,
-                                                         tau=tau)
+                                                         tau=tau*pq.s)
                 pymuvr_d = pymuvr.distance_matrix(self.pymuvr_observations,
                                                   self.pymuvr_observations,
                                                   cos,
@@ -262,7 +262,7 @@ class TestCompareWithSpykeutils(unittest.TestCase):
             for tau in self.tau:
                 sutils_d = stm.van_rossum_multiunit_dist(self.sutils_units,
                                                          weighting=cos,
-                                                         tau=tau)
+                                                         tau=tau*pq.s)
                 pymuvr_d_square = pymuvr.square_distance_matrix(self.pymuvr_observations,
                                                                 cos,
                                                                 tau)                
