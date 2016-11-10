@@ -41,7 +41,7 @@ def main():
 
     sutils_units, pymuvr_observations = generate_spike_trains(n_observations, n_cells, rate, tstop)
     sutils_start = time.clock()
-    sutils_d = stm.van_rossum_multiunit_dist(sutils_units, weighting=cos, tau=tau)
+    sutils_d = stm.van_rossum_multiunit_dist(sutils_units, weighting=cos, tau=tau * pq.s)
     sutils_stop = time.clock()
     pymuvr_start = time.clock()
     pymuvr_d = pymuvr.square_distance_matrix(pymuvr_observations, cos, tau)
