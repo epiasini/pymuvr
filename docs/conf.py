@@ -253,6 +253,7 @@ man_pages = [
 # If true, show URL addresses after external links.
 #man_show_urls = False
 
+html_static_path = []
 
 # -- Options for Texinfo output -------------------------------------------
 
